@@ -294,29 +294,34 @@ def employees(request):
     return render(request, path + "employees.html", context)
 
 
+from .forms import editUser, editEmployee
+
 @login_required(login_url='login')
 def employee_details(request, pk):
-    if request.method == 'POST':
-        user = User.objects.get(id=pk)
-        employee = Employee.objects.get(user=user)
-        user.first_name = request.POST.get("first_name")
-        user.last_name = request.POST.get("last_name")
-        user.email = request.POST.get("email")
-        employee.phoneNumber = request.POST.get("phoneNumber")
-        user.save()
-        employee.save()
-        return redirect("home")
-
     role = str(request.user.groups.all()[0])
     path = role + "/"
 
     tempUser = User.objects.get(id=pk)
     employee = Employee.objects.get(user=tempUser)
     tasks = Task.objects.filter(employee=employee)
+
+    if request.method == 'POST':
+        form_user = editUser(request.POST, instance=tempUser)
+        form_employee = editEmployee(request.POST, instance=employee)
+        if form_user.is_valid() and form_employee.is_valid():
+            form_user.save()
+            form_employee.save()
+            return redirect("home")
+    else:
+        form_user = editUser(instance=tempUser)
+        form_employee = editEmployee(instance=employee)
+
     context = {
         "role": role,
         "employee": employee,
-        "tasks": tasks
+        "tasks": tasks,
+        "form_user": form_user,
+        "form_employee": form_employee
     }
     return render(request, path + "employee-profile.html", context)
 
