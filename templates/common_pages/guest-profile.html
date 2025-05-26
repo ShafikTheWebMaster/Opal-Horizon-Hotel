@@ -25,7 +25,6 @@
                         {% endif %}
                     </div>
 
-
                     <div class="p-2 h4">
                         <span>Email :</span>
                         <span class="font-weight-normal">{{guest.user.email}}</span>
@@ -55,7 +54,7 @@
 
                 <br>
                 {% if guest.user.id == request.user.id %}
-                <button type="submit" name="submit" class="btn btn-success float-right">Save Changes</button>
+                <button type="submit" name="submit" class="btn btn-success float-end">Save Changes</button>
                 {% endif %}
                 </form>
             </div>
@@ -124,7 +123,7 @@
                             <form action="{% url 'request-refund' %}" method="POST">
                                 {% csrf_token %}
                                 <input type="hidden" value="{{bo.id}}" name="bookingId">
-                                <td><button type="submit" class="btn btn-outline-success btn-lg " name="refReq">Send
+                                <td><button type="submit" class="btn btn-outline-success btn-lg" name="refReq">Send
                                         Refund Request</button></td>
                             </form>
                             {% endif %}
