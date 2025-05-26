@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import dj_database_url
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,7 @@ SECRET_KEY = 'on9*bf65je3#4+jphqufropk!s9*i&$*54@_9t8^6+c)iro2&q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['opal-horizon-hotel.onrender.com']
+ALLOWED_HOSTS = ['opal-horizon-hotel.onrender.com', '127.0.0.1']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -82,10 +84,7 @@ WSGI_APPLICATION = 'HMS.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL', 'sqlite:///' + str(BASE_DIR / "db.sqlite3")))
 }
 
 
@@ -127,11 +126,3 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR, "static"]
-
-# mail
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_USE_TLS = True
-# EMAIL_HOST_USER = 'your_email_address'
-# EMAIL_HOST_PASSWORD = 'your_email_address_password'
