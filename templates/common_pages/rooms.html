@@ -91,13 +91,14 @@
                 {% endif %}
                 {% if role == "guest" or role == "receptionist" %}
                 <td>
-                    <form action="{% url 'booking-make' %}" method="POST">
-                        {% csrf_token %}
-                        <input type="hidden" value="{{ room }}" name="roomid">
-                        <input type="date" value="{{fd}}" name="fd" class="d-none">
-                        <input type="date" value="{{ld}}" name="ld" class="d-none">
-                        <button type="submit" name="book" id="book" class="btn btn-sm btn-primary px-3">Book</button>
-                    </form>
+                <form action="{% url 'booking-make' %}" method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" value="{{ room }}" name="roomid">
+                    <input type="date" value="{{fd}}" name="fd" class="d-none">
+                    <input type="date" value="{{ld}}" name="ld" class="d-none">
+                    <input type="submit" name="bookGuestButton" id="book" class="btn btn-sm btn-primary px-3" value="Book">
+                </form>
+                
                 </td>
                 {% endif %}
             </tr>

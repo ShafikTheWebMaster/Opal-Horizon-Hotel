@@ -63,7 +63,10 @@ def add_employee(request):
 
     if request.method == 'POST':
         post = request.POST.copy()  # to make it mutable
-        post['phoneNumber'] = "+90" + post['phoneNumber']
+        phone_number = post.get('phoneNumber', '')
+        # Only prepend +90 if the phone number does not start with +
+        if not phone_number.startswith('+'):
+            post['phoneNumber'] = "+90" + phone_number
         request.POST = post
 
         form = CreateUserForm(request.POST)

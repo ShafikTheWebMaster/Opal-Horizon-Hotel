@@ -1,5 +1,18 @@
 <div class="container">
 
+    {% if messages %}
+    <div class="row">
+        <div class="col-12">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     <div class="row py-5 h5">
         <p>You are currently trying to book This room:
             <br>
@@ -21,45 +34,52 @@
     </div>
 
 
-    <form action="" method="POST">
-        {% csrf_token %}
-        <div class=row>
-            <input type="hidden" value="{{ room }}" name="roomid">
-            <input type="date" value="{{ fd }}" name="fd" class="d-none">
-            <input type="date" value="{{ ld }}" name="ld" class="d-none">
-            {% if room.capacity > 1 %}
-            <div class="col-6">
-                <h4>Add Dependee</h4>
-                <input type="text" class="form-control d-inline" name="depName">
-                <button type="submit" name="add"
-                    class="form-control btn btn-sm btn-outline-success px-3 d-inline">Add</button>
-            </div>
-
-            <div class="col-6">
-                <ul id="myList" class="list-group">
-                    <h4>List Of Dependees</h4>
-                    {% for n in names %}
-                    <li class="list-group-item">{{n}}<input type="hidden" name="name{{forloop.counter}}" value="{{n}}">
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
-            {% endif %}
-
-            {% if role == "receptionist" %}
-
-            <label for="exampleFormControlSelect1">Select A Guest
-            </label>
-            <select class="form-control" name="guest" required="" id="id_guest">
-                {% for guest in guests %}
-                <option value="{{guest.id}}">{{guest.user.first_name}} {{guest.user.last_name}}</option>
-                {% endfor %}
-            </select>
-            {% endif %}
-
-            <button type="submit" class="btn btn-info w-100 mt-3" name="bookGuestButton">Book</button>
+<form action="" method="POST" id="bookingForm">
+    {% csrf_token %}
+    <div class=row>
+        <input type="hidden" value="{{ room }}" name="roomid">
+        <input type="date" value="{{ fd }}" name="fd" class="d-none">
+        <input type="date" value="{{ ld }}" name="ld" class="d-none">
+        {% if room.capacity > 1 %}
+        <div class="col-6">
+            <h4>Add Dependee</h4>
+            <input type="text" class="form-control d-inline" name="depName">
+            <button type="submit" name="add"
+                class="form-control btn btn-sm btn-outline-success px-3 d-inline">Add</button>
         </div>
-    </form>
+
+        <div class="col-6">
+            <ul id="myList" class="list-group">
+                <h4>List Of Dependees</h4>
+                {% for n in names %}
+                <li class="list-group-item">{{n}}<input type="hidden" name="name{{forloop.counter}}" value="{{n}}">
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        {% if role == "receptionist" %}
+
+        <label for="exampleFormControlSelect1">Select A Guest
+        </label>
+        <select class="form-control" name="guest" required="" id="id_guest">
+            {% for guest in guests %}
+            <option value="{{guest.id}}">{{guest.user.first_name}} {{guest.user.last_name}}</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+
+        <button type="submit" class="btn btn-info w-100 mt-3" name="bookGuestButton" id="bookButton">Book</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById('bookingForm').addEventListener('submit', function() {
+        document.getElementById('bookButton').disabled = true;
+        document.getElementById('bookButton').innerText = 'Booking...';
+    });
+</script>
 
 
     <div class="py-3">

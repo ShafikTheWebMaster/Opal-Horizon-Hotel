@@ -43,8 +43,8 @@
 
     </div>
 
-    <table class="table table-hover table-striped">
-        <thead class="bg-secondary rounded">
+    <table class="table table-striped">
+        <thead>
             <tr>
                 <form action="" method="POST">
                     {% csrf_token %}
@@ -86,9 +86,8 @@
             {% endfor %}
         </tbody>
 
-    </table>
+    </table>  <br> <br> <br>
 
-    <div class="top-10 pt-4 border-top border-secondary">
         <div class="h3">
             <form action="" method="POST">
                 {% csrf_token %}
@@ -98,6 +97,9 @@
             </form>
 
         </div>
+        
+
+
         <table class="table table-hover table-striped">
             <thead class="bg-secondary rounded">
                 <tr>
@@ -133,5 +135,5 @@
             </tbody>
 
         </table>
-    </div>
+
 </div>

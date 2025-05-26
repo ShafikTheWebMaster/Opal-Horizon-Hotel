@@ -1,101 +1,111 @@
-<div class="container">
+<div class="container mt-5">
 
     <form action="" method="POST">
         {% csrf_token %}
-        <div class="row mt-5 clearfix">
-            <div class="col-6">
-
-                {% if employee.user.id == request.user.id %}
-                    {{ form_user.non_field_errors }}
-                    <div class="p-2 h4">
-                        <label for="{{ form_user.first_name.id_for_label }}">Name:</label>
-                        {{ form_user.first_name.errors }}
-                        {{ form_user.first_name }}
-                    </div>
-
-                    <div class="p-2 h4">
-                        <label for="{{ form_user.last_name.id_for_label }}">Surname:</label>
-                        {{ form_user.last_name.errors }}
-                        {{ form_user.last_name }}
-                    </div>
-
-                    <div class="p-2 h4">
-                        <label for="{{ form_user.email.id_for_label }}">Email:</label>
-                        {{ form_user.email.errors }}
-                        {{ form_user.email }}
-                    </div>
-
-                    <div class="p-2 h4">
-                        <span>Creation Date:</span>
-                        <span class="font-weight-normal">{{employee.user.date_joined}}</span>
-                    </div>
-                {% else %}
-                    <div class="p-2 h4">
-                        <span>Name:</span>
-                        <span class="font-weight-normal">{{employee.user.first_name}}</span>
-                    </div>
-
-                    <div class="p-2 h4">
-                        <span>Surname:</span>
-                        <span class="font-weight-normal">{{employee.user.last_name}}</span>
-                    </div>
-
-                    <div class="p-2 h4">
-                        <span>Email :</span>
-                        <span class="font-weight-normal">{{employee.user.email}}</span>
-                    </div>
-
-                    <div class="p-2 h4">
-                        <span>Creation Date:</span>
-                        <span class="font-weight-normal">{{employee.user.date_joined}}</span>
-                    </div>
-                {% endif %}
-
+        <div class="card mx-auto" >
+            <div class="card-header bg-primary text-white">
+                Employee Profile
             </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
 
-            <div class="col-6">
+                        {% if employee.user.id == request.user.id %}
+                            {{ form_user.non_field_errors }}
 
-                {% if employee.user.id == request.user.id %}
-                    {{ form_employee.non_field_errors }}
-                    <div class="p-2 h4">
-                        <label for="{{ form_employee.phoneNumber.id_for_label }}">Phone Number:</label>
-                        {{ form_employee.phoneNumber.errors }}
-                        {{ form_employee.phoneNumber }}
+                            
+                            <div class="form-group">
+                                <label for="{{ form_user.first_name.id_for_label }}">Name:</label>
+                                {{ form_user.first_name.errors }}
+                                {{ form_user.first_name }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form_user.last_name.id_for_label }}">Surname:</label>
+                                {{ form_user.last_name.errors }}
+                                {{ form_user.last_name }}
+                            </div>
+
+                            <div class="form-group">
+                                <label for="{{ form_user.email.id_for_label }}">Email:</label>
+                                {{ form_user.email.errors }}
+                                {{ form_user.email }}
+                            </div>
+
+                            <div class="form-group">
+                                <span>Creation Date:</span>
+                                <span class="font-weight-normal">{{employee.user.date_joined}}</span>
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <span>Name:</span>
+                                <span class="font-weight-normal">{{employee.user.first_name}}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <span>Surname:</span>
+                                <span class="font-weight-normal">{{employee.user.last_name}}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <span>Email :</span>
+                                <span class="font-weight-normal">{{employee.user.email}}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <span>Creation Date:</span>
+                                <span class="font-weight-normal">{{employee.user.date_joined}}</span>
+                            </div>
+                        {% endif %}
+
                     </div>
 
-                    <div class="p-2 h4">
-                        <span>Role :</span>
-                        <span class="font-weight-normal">{{employee.user.groups.first}}</span>
-                    </div>
+                    <div class="col-6">
 
-                    <div class="p-2 h4">
-                        <label for="{{ form_employee.salary.id_for_label }}">Salary:</label>
-                        {{ form_employee.salary.errors }}
-                        {{ form_employee.salary }}
-                    </div>
-                {% else %}
-                    <div class="p-2 h4">
-                        <span>Phone Number: </span>
-                        <span class="font-weight-normal">{{employee.phoneNumber}}</span>
-                    </div>
+                        {% if employee.user.id == request.user.id %}
+                            {{ form_employee.non_field_errors }}
+                            <div class="form-group">
+                                <label for="{{ form_employee.phoneNumber.id_for_label }}">Phone Number:</label>
+                                {{ form_employee.phoneNumber.errors }}
+                                {{ form_employee.phoneNumber }}
+                            </div>
 
-                    <div class="p-2 h4">
-                        <span>Role :</span>
-                        <span class="font-weight-normal">{{employee.user.groups.first}}</span>
-                    </div>
+                            <div class="form-group">
+                                <span>Role :</span>
+                                <span class="font-weight-normal">{{employee.user.groups.first}}</span>
+                            </div>
 
-                    <div class="p-2 h4">
-                        <span>Salary:</span>
-                        <span class="font-weight-normal">{{employee.salary}}</span>
-                    </div>
-                {% endif %}
+                            <div class="form-group">
+                                <label for="{{ form_employee.salary.id_for_label }}">Salary:</label>
+                                {{ form_employee.salary.errors }}
+                                {{ form_employee.salary }}
+                            </div>
+                        {% else %}
+                            <div class="form-group">
+                                <span>Phone Number: </span>
+                                <span class="font-weight-normal">{{employee.phoneNumber}}</span>
+                            </div>
 
+                            <div class="form-group">
+                                <span>Role :</span>
+                                <span class="font-weight-normal">{{employee.user.groups.first}}</span>
+                            </div>
+
+                            <div class="form-group">
+                                <span>Salary:</span>
+                                <span class="font-weight-normal">{{employee.salary}}</span>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
             </div>
+            {% if employee.user.id == request.user.id %}
+            <div class="card-footer">
+                <button type="submit" name="submit" class="btn btn-success float-right">Save Changes</button>
+            </div>
+            {% endif %}
         </div>
-        {% if employee.user.id == request.user.id %}
-        <button type="submit" name="submit" class="btn btn-success float-right">Save Changes</button>
-        {% endif %}
-        <br>
     </form>
     <br>
 

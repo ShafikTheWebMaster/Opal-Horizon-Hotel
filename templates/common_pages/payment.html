@@ -1,0 +1,12 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <h2>Payment Page</h2>
+    <p>Please confirm your payment for the booking.</p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Confirm Payment</button>
+    </form>
+</div>
+{% endblock %}

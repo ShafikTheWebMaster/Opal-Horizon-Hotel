@@ -382,64 +382,87 @@ def bookings(request):
     return render(request, path + "bookings.html", context)
 
 
+import logging
+from django.contrib import messages
+
+logger = logging.getLogger(__name__)
+
 @login_required(login_url='login')
 def booking_make(request):
     role = str(request.user.groups.all()[0])
     path = role + "/"
 
-    room = Room.objects.get(number=request.POST.get("roomid"))
-    guests = Guest.objects.all()  # we pass this to context
     names = []
+    total = 0
+    guests = Guest.objects.all()  # we pass this to context
+
     if request.method == 'POST':
-        if request.POST.get("fd") == "" or request.POST.get("ld") == "":
+        room_id = request.POST.get("roomid")
+        fd = request.POST.get("fd")
+        ld = request.POST.get("ld")
+
+        if not room_id or not fd or not ld:
+            messages.error(request, "Room and dates must be provided.")
+            logger.warning(f"Booking attempt with missing data by user {request.user.id}")
             return redirect("rooms")
 
-        start_date = datetime.strptime(
-            str(request.POST.get("fd")), "%Y-%m-%d")
-        end_date = datetime.strptime(
-            str(request.POST.get("ld")), "%Y-%m-%d")
-        numberOfDays = abs((end_date-start_date).days)
-        # get room peice:
+        try:
+            room = Room.objects.get(number=room_id)
+        except Room.DoesNotExist:
+            messages.error(request, "Selected room does not exist.")
+            logger.error(f"Booking attempt for non-existent room {room_id} by user {request.user.id}")
+            return redirect("rooms")
+
+        try:
+            start_date = datetime.strptime(fd, "%Y-%m-%d")
+            end_date = datetime.strptime(ld, "%Y-%m-%d")
+        except ValueError:
+            messages.error(request, "Invalid date format.")
+            logger.error(f"Booking attempt with invalid date format by user {request.user.id}")
+            return redirect("rooms")
+
+        numberOfDays = abs((end_date - start_date).days)
         price = room.price
         total = price * numberOfDays
 
         if 'add' in request.POST:  # add dependee
             name = request.POST.get("depName")
-            names.append(name)
-            for i in range(room.capacity-2):
-                nameid = "name" + str(i+1)
-                if request.POST.get(nameid) != "":
-                    names.append(request.POST.get(nameid))
+            if name:
+                names.append(name)
+            for i in range(room.capacity - 2):
+                nameid = "name" + str(i + 1)
+                dep_name = request.POST.get(nameid)
+                if dep_name:
+                    names.append(dep_name)
 
         if 'bookGuestButton' in request.POST:
             if "guest" in request.POST:
-                curguest = Guest.objects.get(id=request.POST.get("guest"))
+                try:
+                    curguest = Guest.objects.get(id=request.POST.get("guest"))
+                except Guest.DoesNotExist:
+                    messages.error(request, "Selected guest does not exist.")
+                    logger.error(f"Booking attempt with invalid guest id by user {request.user.id}")
+                    return redirect("rooms")
             else:
                 curguest = request.user.guest
-            curbooking = Booking(guest=curguest, roomNumber=room, startDate=request.POST.get(
-                "fd"), endDate=request.POST.get("ld"))
-            curbooking.save()
 
-            for i in range(room.capacity-1):
-                nameid = "name" + str(i+1)
-                if request.POST.get(nameid) != "":
-                    if request.POST.get(nameid) != None:
-                        d = Dependees(booking=curbooking,
-                                      name=request.POST.get(nameid))
-                        d.save()
+            curbooking = Booking(guest=curguest, roomNumber=room, startDate=fd, endDate=ld)
+            curbooking.save()
+            logger.info(f"Booking created by user {request.user.id} for room {room.number} from {fd} to {ld}")
+
+            for i in range(room.capacity - 1):
+                nameid = "name" + str(i + 1)
+                dep_name = request.POST.get(nameid)
+                if dep_name:
+                    d = Dependees(booking=curbooking, name=dep_name)
+                    d.save()
+                    logger.info(f"Dependee {dep_name} added to booking {curbooking.id}")
+
+            messages.success(request, "Booking successfully created.")
             return redirect("payment")
 
-    context = {
-        "fd": request.POST.get("fd"),
-        "ld": request.POST.get("ld"),
-        "role": role,
-        "guests": guests,
-        "room": room,
-        "total": total,
-        "names": names
-    }
-
-    return render(request, path + "booking-make.html", context)
+    else:
+        room = None
 
 
 @login_required(login_url='login')
@@ -458,6 +481,20 @@ def deleteBooking(request, pk):
 
     }
     return render(request, path + "deleteBooking.html", context)
+
+
+@login_required(login_url="login")
+def payment(request):
+    if request.method == "POST":
+        from django.contrib import messages
+        import logging
+
+        logger = logging.getLogger(__name__)
+        messages.success(request, "Payment successful! Your booking is confirmed.")
+        logger.info(f"Payment successful for user {request.user.id}")
+        return redirect("bookings")
+
+    return render(request, "common_pages/payment.html")
 
 
 @ login_required(login_url='login')
