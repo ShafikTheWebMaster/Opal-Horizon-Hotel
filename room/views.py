@@ -119,7 +119,7 @@ def add_room(request):
         number = request.POST.get('number')
         capacity = request.POST.get('capacity')
         numberOfBeds = request.POST.get('beds')
-        roomType = request.POST.get('type')
+        roomType = request.POST.get('roomType')
         price = request.POST.get('price')
         print(capacity)
         room = Room(number=number, capacity=capacity,
