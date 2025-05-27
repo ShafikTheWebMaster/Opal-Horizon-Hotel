@@ -1,101 +1,119 @@
 <!--Admin Navbar-->
-<nav class="navbar navbar-dark bg-dark navbar-expand-lg py-3 " role="navigation">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3">
     <div class="container">
         <a href="" class="navbar-brand">
-
-            <h2 class="text-capitalize">
-                {{ request.user.first_name }} {{ request.user.last_name }} -
-                <small>
-                    {{ role }}
-                </small>
+            <h2 class="text-capitalize mb-0">
+                {{ request.user.first_name }} {{ request.user.last_name }}
+                <small class="ms-2 text-muted">{{ role }}</small>
             </h2>
         </a>
-        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarTags">
+        <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarTags"
+            aria-controls="navbarTags" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarTags">
-            <ul class="navbar-nav ml-auto">
-
-
-                <li class="nav-item dropdown p-2">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Options
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle px-3" href="#" id="navbarDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bars me-2"></i>Options
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-
-                        <!--Dropdpwn items are changed by role-->
-
+                    <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                        <!--Dropdown items are changed by role-->
                         {% if role == 'admin' %}
-
-                        <a class="dropdown-item" href="{% url 'guests'%}">Guests</a>
-                        <a class="dropdown-item" href="{% url 'employees'%}">Employees</a>
-                        <a class="dropdown-item" href="{% url 'events'%}">Events</a>
-                        <a class="dropdown-item" href="{% url 'bookings' %}">Bookings</a>
-                        <a class="dropdown-item" href="{% url 'rooms' %}">Rooms</a>
-                        <a class="dropdown-item" href="{% url 'room-services' %}">Room Services</a>
-                        <a class="dropdown-item" href="{% url 'announcements' %}">Announcements</a>
-                        <a class="dropdown-item" href="{% url 'refunds' %}">Refunds</a>
+                        <a class="dropdown-item" href="{% url 'guests'%}"><i class="fas fa-users me-2"></i>Guests</a>
+                        <a class="dropdown-item" href="{% url 'employees'%}"><i
+                                class="fas fa-user-tie me-2"></i>Employees</a>
+                        <a class="dropdown-item" href="{% url 'events'%}"><i
+                                class="fas fa-calendar-alt me-2"></i>Events</a>
+                        <a class="dropdown-item" href="{% url 'bookings' %}"><i
+                                class="fas fa-book me-2"></i>Bookings</a>
+                        <a class="dropdown-item" href="{% url 'rooms' %}"><i class="fas fa-door-open me-2"></i>Rooms</a>
+                        <a class="dropdown-item" href="{% url 'room-services' %}"><i
+                                class="fas fa-concierge-bell me-2"></i>Room Services</a>
+                        <a class="dropdown-item" href="{% url 'announcements' %}"><i
+                                class="fas fa-bullhorn me-2"></i>Announcements</a>
+                        <a class="dropdown-item" href="{% url 'refunds' %}"><i
+                                class="fas fa-money-bill-wave me-2"></i>Refunds</a>
 
                         {% elif role == 'guest' %}
-
-                        <a class="dropdown-item" href="{% url 'announcements' %}">Announcements</a>
-                        <a class="dropdown-item" href="{% url 'rooms' %}">Book Room</a>
-                        <a class="dropdown-item" href="{% url 'current-room-services' %}">Current Room Services</a>
-                        <a class="dropdown-item" href="{% url 'events' %}">Events</a>
+                        <a class="dropdown-item" href="{% url 'announcements' %}"><i
+                                class="fas fa-bullhorn me-2"></i>Announcements</a>
+                        <a class="dropdown-item" href="{% url 'rooms' %}"><i class="fas fa-bed me-2"></i>Book Room</a>
+                        <a class="dropdown-item" href="{% url 'current-room-services' %}"><i
+                                class="fas fa-concierge-bell me-2"></i>Current Room Services</a>
+                        <a class="dropdown-item" href="{% url 'events' %}"><i
+                                class="fas fa-calendar-alt me-2"></i>Events</a>
 
                         {% if request.user.guest.currentRoom != None %}
-                        <a class="dropdown-item" href="{% url 'room-profile' request.user.guest.currentRoom %}">My
-                            Room</a>
-                        {% else %}<a class="dropdown-item" href="{% url 'rooms' %}">My Room</a> {% endif %}
-
-
-                        {% elif role == 'manager' %}
-
-                        <a class="dropdown-item" href="{% url 'guests'%}">Guests</a>
-                        <a class="dropdown-item" href="{% url 'employees'%}">Employees</a>
-                        <a class="dropdown-item" href="{% url 'events'%}">Events</a>
-                        <a class="dropdown-item" href="{% url 'bookings' %}">Bookings</a>
-                        <a class="dropdown-item" href="{% url 'rooms' %}">Rooms</a>
-                        <a class="dropdown-item" href="{% url 'room-services' %}">Room Services</a>
-                        <a class="dropdown-item" href="{% url 'announcements' %}">Announcements</a>
-                        <a class="dropdown-item" href="{% url 'storage' %}">Storage</a>
-                        <a class="dropdown-item" href="{% url 'refunds' %}">Refunds</a>
-
-
-                        {% elif role == 'receptionist' %}
-
-                        <a class="dropdown-item" href="{% url 'guests'%}">Guests Information</a>
-                        <a class="dropdown-item" href="{% url 'rooms'%}">Room Information</a>
-                        <a class="dropdown-item" href="{% url 'events'%}">Event Information</a>
-                        <a class="dropdown-item" href="{% url 'bookings' %}">Booking Information</a>
-                        <a class="dropdown-item" href="{% url 'announcements'%}">Announcements</a>
-
-                        {% elif role == 'staff' %}
-
-                        <a class="dropdown-item" href="{% url 'tasks'%}">My Tasks</a>
-                        <a class="dropdown-item" href="{% url 'announcements'%}">Announcements</a>
-                        <a class="dropdown-item" href="{% url 'food-menu'%}">Food Menu</a>
-                        <a class="dropdown-item" href="{% url 'storage'%}">Storage</a>
-
+                        <a class="dropdown-item" href="{% url 'room-profile' request.user.guest.currentRoom %}">
+                            <i class="fas fa-home me-2"></i>My Room
+                        </a>
+                        {% else %}
+                        <a class="dropdown-item" href="{% url 'rooms' %}">
+                            <i class="fas fa-search me-2"></i>Find Room
+                        </a>
                         {% endif %}
 
+                        {% elif role == 'manager' %}
+                        <a class="dropdown-item" href="{% url 'guests'%}"><i class="fas fa-users me-2"></i>Guests</a>
+                        <a class="dropdown-item" href="{% url 'employees'%}"><i
+                                class="fas fa-user-tie me-2"></i>Employees</a>
+                        <a class="dropdown-item" href="{% url 'events'%}"><i
+                                class="fas fa-calendar-alt me-2"></i>Events</a>
+                        <a class="dropdown-item" href="{% url 'bookings' %}"><i
+                                class="fas fa-book me-2"></i>Bookings</a>
+                        <a class="dropdown-item" href="{% url 'rooms' %}"><i class="fas fa-door-open me-2"></i>Rooms</a>
+                        <a class="dropdown-item" href="{% url 'room-services' %}"><i
+                                class="fas fa-concierge-bell me-2"></i>Room Services</a>
+                        <a class="dropdown-item" href="{% url 'announcements' %}"><i
+                                class="fas fa-bullhorn me-2"></i>Announcements</a>
+                        <a class="dropdown-item" href="{% url 'storage' %}"><i
+                                class="fas fa-warehouse me-2"></i>Storage</a>
+                        <a class="dropdown-item" href="{% url 'refunds' %}"><i
+                                class="fas fa-money-bill-wave me-2"></i>Refunds</a>
+
+                        {% elif role == 'receptionist' %}
+                        <a class="dropdown-item" href="{% url 'guests'%}"><i class="fas fa-users me-2"></i>Guests
+                            Information</a>
+                        <a class="dropdown-item" href="{% url 'rooms'%}"><i class="fas fa-door-open me-2"></i>Room
+                            Information</a>
+                        <a class="dropdown-item" href="{% url 'events'%}"><i class="fas fa-calendar-alt me-2"></i>Event
+                            Information</a>
+                        <a class="dropdown-item" href="{% url 'bookings' %}"><i class="fas fa-book me-2"></i>Booking
+                            Information</a>
+                        <a class="dropdown-item" href="{% url 'announcements'%}"><i
+                                class="fas fa-bullhorn me-2"></i>Announcements</a>
+
+                        {% elif role == 'staff' %}
+                        <a class="dropdown-item" href="{% url 'tasks'%}"><i class="fas fa-tasks me-2"></i>My Tasks</a>
+                        <a class="dropdown-item" href="{% url 'announcements'%}"><i
+                                class="fas fa-bullhorn me-2"></i>Announcements</a>
+                        <a class="dropdown-item" href="{% url 'food-menu'%}"><i class="fas fa-utensils me-2"></i>Food
+                            Menu</a>
+                        <a class="dropdown-item" href="{% url 'storage'%}"><i
+                                class="fas fa-warehouse me-2"></i>Storage</a>
+                        {% endif %}
                     </div>
                 </li>
 
-
-                <li class="nav-item mr-3 p-2">
+                <li class="nav-item">
                     {% if role == 'staff' or role == 'receptionist' or role == 'admin' or role == 'manager' %}
-                    <a href="{% url 'employee-profile' user.id %}" class="nav-link">Profile</a>
+                    <a href="{% url 'employee-profile' user.id %}" class="nav-link px-3">
+                        <i class="fas fa-user-circle me-2"></i>Profile
+                    </a>
                     {% endif %}
                     {% if role == 'guest' %}
-                    <a href="{% url 'guest-profile' user.id %}" class="nav-link">Profile</a>
+                    <a href="{% url 'guest-profile' user.id %}" class="nav-link px-3">
+                        <i class="fas fa-user-circle me-2"></i>Profile
+                    </a>
                     {% endif %}
                 </li>
-                <li class="nav-item p-2 ">
-                    <a href="{% url 'logout' %}" class="nav-link">Log Out</a>
+                <li class="nav-item">
+                    <a href="{% url 'logout' %}" class="nav-link px-3">
+                        <i class="fas fa-sign-out-alt me-2"></i>Log Out
+                    </a>
                 </li>
             </ul>
         </div>

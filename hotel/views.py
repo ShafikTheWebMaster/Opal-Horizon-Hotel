@@ -17,13 +17,33 @@ from hotel.models import *
 from .forms import *
 
 
-@login_required(login_url='login')
 def home(request):
-    role = str(request.user.groups.all()[0])
-    if role != "guest":
-        return redirect("employee-profile", pk=request.user.id)
-    else:
-        return redirect("guest-profile", pk=request.user.id)
+    rooms = Room.objects.all()
+    available_rooms = []
+    today = datetime.now().date()
+
+    # Check room availability
+    for room in rooms:
+        is_available = True
+        if room.statusStartDate and room.statusEndDate:
+            if today >= room.statusStartDate and today <= room.statusEndDate:
+                is_available = False
+        
+        if is_available:
+            # Check if room has any current bookings
+            current_bookings = Booking.objects.filter(
+                roomNumber=room,
+                startDate__lte=today,
+                endDate__gte=today
+            )
+            if not current_bookings:
+                available_rooms.append(room)
+
+    context = {
+        'rooms': available_rooms,
+        'role': str(request.user.groups.all()[0]) if request.user.is_authenticated else 'anonymous'
+    }
+    return render(request, 'index_content.html', context)
 
 
 @login_required(login_url='login')

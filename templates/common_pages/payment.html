@@ -1,12 +1,175 @@
 {% extends "index.html" %}
 
-{% block content %}
+{% block context %}
 <div class="container py-5">
-    <h2>Payment Page</h2>
-    <p>Please confirm your payment for the booking.</p>
-    <form method="POST">
-        {% csrf_token %}
-        <button type="submit" class="btn btn-success">Confirm Payment</button>
-    </form>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success bg-gradient text-white py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-credit-card me-2"></i>
+                        Payment Confirmation
+                    </h4>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center"
+                            role="alert">
+                            <i
+                                class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                            <div>{{ message }}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <div class="row g-4">
+                        <!-- Booking Summary -->
+                        <div class="col-12">
+                            <div class="alert alert-info bg-light border-0">
+                                <h5 class="d-flex align-items-center text-primary mb-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Booking Summary
+                                </h5>
+                                <div class="row g-3">
+                                    <div class="col-sm-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Check-in</small>
+                                                <strong>{{ booking.check_in_date|default:"Not specified" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-calendar-check text-primary me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Check-out</small>
+                                                <strong>{{ booking.check_out_date|default:"Not specified" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-door-open text-primary me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Room</small>
+                                                <strong>{{ booking.room.number|default:"Not specified" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-users text-primary me-2"></i>
+                                            <div>
+                                                <small class="text-muted d-block">Guests</small>
+                                                <strong>{{ booking.number_of_guests|default:"1" }}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Details -->
+                        <div class="col-12">
+                            <div class="card bg-light border-0">
+                                <div class="card-body">
+                                    <h5 class="d-flex align-items-center text-success mb-4">
+                                        <i class="fas fa-money-bill-wave me-2"></i>
+                                        Payment Details
+                                    </h5>
+                                    <div class="table-responsive">
+                                        <table class="table table-borderless mb-0">
+                                            <tbody>
+                                                <tr>
+                                                    <td class="text-muted">Room Rate</td>
+                                                    <td class="text-end">${{ booking.room.price|default:"0" }}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="text-muted">Number of Nights</td>
+                                                    <td class="text-end">{{ booking.nights|default:"1" }}</td>
+                                                </tr>
+                                                {% if booking.taxes %}
+                                                <tr>
+                                                    <td class="text-muted">Taxes</td>
+                                                    <td class="text-end">${{ booking.taxes }}</td>
+                                                </tr>
+                                                {% endif %}
+                                                <tr class="border-top">
+                                                    <td class="fw-bold h5">Total Amount</td>
+                                                    <td class="text-end fw-bold h5">${{
+                                                        booking.total_amount|default:booking.room.price }}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Payment Form -->
+                        <div class="col-12">
+                            <form method="POST" id="paymentForm" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success btn-lg" id="confirmButton">
+                                        <i class="fas fa-lock me-2"></i>Confirm and Pay
+                                    </button>
+                                    <a href="{% url 'bookings' %}" class="btn btn-outline-secondary">
+                                        <i class="fas fa-arrow-left me-2"></i>Back to Bookings
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .alert {
+        border-radius: 8px;
+    }
+
+    .table td {
+        padding: 0.75rem 0;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+    .btn-lg {
+        padding: 1rem 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.25rem;
+        }
+    }
+</style>
+
+<script>
+    document.getElementById('paymentForm').addEventListener('submit', function (e) {
+        const button = document.getElementById('confirmButton');
+        button.disabled = true;
+        button.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Processing Payment...';
+    });
+</script>
 {% endblock %}

@@ -8,7 +8,10 @@ from .models import *
 class editRoom(ModelForm):
     class Meta:
         model = Room
-        fields = ["capacity", "numberOfBeds", "roomType", "price"]
+        fields = ["capacity", "numberOfBeds", "roomType", "price", "main_image", "image_1", "image_2", "image_3", "description"]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
 
 
 class editBooking(ModelForm):

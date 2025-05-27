@@ -1,78 +1,251 @@
+{% extends 'index.html' %}
+{% block context %}
+<div class="container py-5">
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i
+                class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-<div class="container">
+    <div class="row g-4">
+        <!-- Event Details Card -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 d-flex align-items-center">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Event Details
+                        </h4>
+                        <div class="btn-group">
+                            {% if role == "manager" or role == "admin" %}
+                            <a href="{% url 'event-edit' event.id %}" class="btn btn-light">
+                                <i class="fas fa-edit me-2"></i>Edit Event
+                            </a>
+                            {% endif %}
+                            <a href="{% url 'events' %}" class="btn btn-light">
+                                <i class="fas fa-arrow-left me-2"></i>Back to Events
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <!-- Event Information -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="d-flex align-items-center text-primary mb-4">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Event Information
+                                    </h5>
 
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small">Event Type</label>
+                                        <div class="d-flex align-items-center p-2 bg-white rounded">
+                                            <i class="fas fa-tag text-primary me-2"></i>
+                                            <span class="h6 mb-0">{{event.eventType}}</span>
+                                        </div>
+                                    </div>
 
-    <div class="row mt-5">
-        <div class="col-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small">Location</label>
+                                        <div class="d-flex align-items-center p-2 bg-white rounded">
+                                            <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                                            <span class="h6 mb-0">{{event.location}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
-            <div class="p-2 h4">
-                <span>Event Type: </span>
-                <span class="font-weight-normal">{{event.eventType}}</span>
+                        <!-- Date Information -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="d-flex align-items-center text-primary mb-4">
+                                        <i class="fas fa-clock me-2"></i>
+                                        Date Information
+                                    </h5>
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small">Start Date</label>
+                                        <div class="d-flex align-items-center p-2 bg-white rounded">
+                                            <i class="fas fa-calendar text-success me-2"></i>
+                                            <span class="h6 mb-0">{{event.startDate|date:"F j, Y"}}</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label text-muted small">End Date</label>
+                                        <div class="d-flex align-items-center p-2 bg-white rounded">
+                                            <i class="fas fa-calendar text-warning me-2"></i>
+                                            <span class="h6 mb-0">{{event.endDate|date:"F j, Y"}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Event Description -->
+                        <div class="col-12">
+                            <div class="card border-0 bg-light">
+                                <div class="card-body">
+                                    <h5 class="d-flex align-items-center text-primary mb-4">
+                                        <i class="fas fa-align-left me-2"></i>
+                                        Event Description
+                                    </h5>
+                                    <div class="bg-white rounded p-4">
+                                        {{event.explanation|linebreaks}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <br>
-
-            <div class="p-2 h4">
-                <span>Start Date:</span>
-                <span class="font-weight-normal">{{event.startDate}}</span>
-            </div>
-
         </div>
 
-        <div class="col-6">
-
-            <div class="p-2 h4">
-                <span>Location:</span>
-                <span class="font-weight-normal">{{event.location}}</span>
+        <!-- Attendees Card -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 d-flex align-items-center">
+                            <i class="fas fa-users me-2"></i>
+                            Event Attendees
+                        </h4>
+                        <span class="badge bg-light text-primary">
+                            <i class="fas fa-user-friends me-1"></i>
+                            {{attendees|length}} Attendees
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4">Attendee</th>
+                                    <th>Email</th>
+                                    <th class="text-end px-4">Additional Guests</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for attendee in attendees %}
+                                <tr>
+                                    <td class="px-4">
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-light rounded-circle p-2 me-3">
+                                                <i class="fas fa-user text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <div class="fw-bold">{{attendee.guest.user.first_name}}
+                                                    {{attendee.guest.user.last_name}}</div>
+                                                <small class="text-muted">Guest #{{attendee.guest.user.id}}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>{{attendee.guest.user.email}}</td>
+                                    <td class="text-end px-4">
+                                        <span class="badge bg-info">
+                                            <i class="fas fa-users me-1"></i>
+                                            {{attendee.numberOfDependees}} Additional Guests
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center py-5 text-muted">
+                                        <i class="fas fa-users fa-3x mb-3"></i>
+                                        <p class="mb-0">No attendees have registered for this event yet</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-
-            <br>
-
-            <div class="p-2 h4">
-                <span>End Date:</span>
-                <span class="font-weight-normal">{{event.endDate}}</span>
-            </div>
-
         </div>
     </div>
-
-    <br>
-
-    <div class="table-responsive my-5 border-top border-secondary pt-5">
-        <div class="table-header row">
-
-            <div class="col-sm-12 col-md-12 col-lg-4 mb-4">
-                <h2>Atendees</h2>
-            </div>
-
-        </div>
-
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Name Surname</th>
-                    <th>Number of Dependees</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for attendee in attendees %}
-                <tr>
-                    <td>{{attendee.guest.user.first_name}} {{attendee.guest.user.last_name}}</td>
-                    <td>{{attendee.numberOfDependees}}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-        </table>
-
-    </div>
-
-    <div class="explanation  pb-5">
-        <div class="header h2 border rounded p-4">Explanation</div>
-        <div class="content">
-            <p class="border rounded p-4">{{event.explanation}}</p>
-        </div>
-    </div>
-
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e0e0e0;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-right: none;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: #0d6efd;
+    }
+
+    .table th {
+        font-weight: 600;
+        border-top: none;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.75em;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn-group .btn {
+            width: 100%;
+            margin-bottom: 0.25rem;
+            border-radius: 0.375rem !important;
+        }
+    }
+</style>
+{% endblock %}

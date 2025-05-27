@@ -1,149 +1,336 @@
-<div class="container mt-5">
-
-    <form action="" method="POST">
-        {% csrf_token %}
-        <div class="card mx-auto" >
-            <div class="card-header bg-primary text-white">
-                Employee Profile
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-6">
-
-                        {% if employee.user.id == request.user.id %}
-                            {{ form_user.non_field_errors }}
-
-                            
-                            <div class="form-group">
-                                <label for="{{ form_user.first_name.id_for_label }}">Name:</label>
-                                {{ form_user.first_name.errors }}
-                                {{ form_user.first_name }}
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form_user.last_name.id_for_label }}">Surname:</label>
-                                {{ form_user.last_name.errors }}
-                                {{ form_user.last_name }}
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form_user.email.id_for_label }}">Email:</label>
-                                {{ form_user.email.errors }}
-                                {{ form_user.email }}
-                            </div>
-
-                            <div class="form-group">
-                                <span>Creation Date:</span>
-                                <span class="font-weight-normal">{{employee.user.date_joined}}</span>
-                            </div>
-                        {% else %}
-                            <div class="form-group">
-                                <span>Name:</span>
-                                <span class="font-weight-normal">{{employee.user.first_name}}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <span>Surname:</span>
-                                <span class="font-weight-normal">{{employee.user.last_name}}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <span>Email :</span>
-                                <span class="font-weight-normal">{{employee.user.email}}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <span>Creation Date:</span>
-                                <span class="font-weight-normal">{{employee.user.date_joined}}</span>
-                            </div>
-                        {% endif %}
-
-                    </div>
-
-                    <div class="col-6">
-
-                        {% if employee.user.id == request.user.id %}
-                            {{ form_employee.non_field_errors }}
-                            <div class="form-group">
-                                <label for="{{ form_employee.phoneNumber.id_for_label }}">Phone Number:</label>
-                                {{ form_employee.phoneNumber.errors }}
-                                {{ form_employee.phoneNumber }}
-                            </div>
-
-                            <div class="form-group">
-                                <span>Role :</span>
-                                <span class="font-weight-normal">{{employee.user.groups.first}}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="{{ form_employee.salary.id_for_label }}">Salary:</label>
-                                {{ form_employee.salary.errors }}
-                                {{ form_employee.salary }}
-                            </div>
-                        {% else %}
-                            <div class="form-group">
-                                <span>Phone Number: </span>
-                                <span class="font-weight-normal">{{employee.phoneNumber}}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <span>Role :</span>
-                                <span class="font-weight-normal">{{employee.user.groups.first}}</span>
-                            </div>
-
-                            <div class="form-group">
-                                <span>Salary:</span>
-                                <span class="font-weight-normal">{{employee.salary}}</span>
-                            </div>
-                        {% endif %}
-
-                    </div>
-                </div>
-            </div>
-            {% if employee.user.id == request.user.id %}
-            <div class="card-footer">
-                <button type="submit" name="submit" class="btn btn-success float-right">Save Changes</button>
-            </div>
-            {% endif %}
+{% extends 'index.html' %}
+{% block context %}
+<div class="container py-5">
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i
+                class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    </form>
-    <br>
-
-    {% if role == 'staff' or request.user != employee.user %}
-    <div class="table-responsive my-5">
-        <div class="table-header row">
-
-            <div class="col-sm-12 col-md-12 col-lg-4 mb-4">
-                <h2>Task List</h2>
-            </div>
-
-        </div>
-
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Task ID</th>
-                    <th>Start Date</th>
-                    <th>End Date</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for tasks in tasks %}
-                <tr>
-                    <td>{{tasks.id}}</td>
-                    <td>{{tasks.startTime}}</td>
-                    <td>{{tasks.endTime}}</td>
-                    <td>{{tasks.description}}</td>
-                </tr>
-                {% endfor %}
-
-            </tbody>
-
-        </table>
-
+        {% endfor %}
     </div>
     {% endif %}
 
+    <div class="row g-4">
+        <!-- Employee Profile Card -->
+        <div class="col-12">
+            <form action="" method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary bg-gradient text-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 d-flex align-items-center">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Employee Profile
+                            </h4>
+                            {% if employee.user.id == request.user.id %}
+                            <button type="submit" name="submit" class="btn btn-light" id="saveButton">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <!-- Personal Information -->
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="d-flex align-items-center text-primary mb-4">
+                                            <i class="fas fa-info-circle me-2"></i>
+                                            Personal Information
+                                        </h5>
+
+                                        {% if employee.user.id == request.user.id %}
+                                        {{ form_user.non_field_errors }}
+
+                                        <div class="mb-3">
+                                            <label for="{{ form_user.first_name.id_for_label }}"
+                                                class="form-label">First
+                                                Name</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                {{ form_user.first_name }}
+                                            </div>
+                                            {{ form_user.first_name.errors }}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="{{ form_user.last_name.id_for_label }}" class="form-label">Last
+                                                Name</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                {{ form_user.last_name }}
+                                            </div>
+                                            {{ form_user.last_name.errors }}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="{{ form_user.email.id_for_label }}"
+                                                class="form-label">Email</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                {{ form_user.email }}
+                                            </div>
+                                            {{ form_user.email.errors }}
+                                        </div>
+                                        {% else %}
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">First Name</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-user text-primary me-2"></i>
+                                                <span class="h6 mb-0">{{employee.user.first_name}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Last Name</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-user text-primary me-2"></i>
+                                                <span class="h6 mb-0">{{employee.user.last_name}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Email</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-envelope text-primary me-2"></i>
+                                                <span class="h6 mb-0">{{employee.user.email}}</span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Member Since</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-calendar text-primary me-2"></i>
+                                                <span class="h6 mb-0">{{employee.user.date_joined|date:"F j, Y"}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Employment Information -->
+                            <div class="col-md-6">
+                                <div class="card h-100 border-0 bg-light">
+                                    <div class="card-body">
+                                        <h5 class="d-flex align-items-center text-primary mb-4">
+                                            <i class="fas fa-briefcase me-2"></i>
+                                            Employment Information
+                                        </h5>
+
+                                        {% if employee.user.id == request.user.id %}
+                                        {{ form_employee.non_field_errors }}
+                                        <div class="mb-3">
+                                            <label for="{{ form_employee.phoneNumber.id_for_label }}"
+                                                class="form-label">Phone
+                                                Number</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                                {{ form_employee.phoneNumber }}
+                                            </div>
+                                            {{ form_employee.phoneNumber.errors }}
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Role</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-user-tag text-primary me-2"></i>
+                                                <span class="badge bg-primary">{{employee.user.groups.first}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="{{ form_employee.salary.id_for_label }}"
+                                                class="form-label">Salary</label>
+                                            <div class="input-group">
+                                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                                {{ form_employee.salary }}
+                                            </div>
+                                            {{ form_employee.salary.errors }}
+                                        </div>
+                                        {% else %}
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Phone Number</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-phone text-primary me-2"></i>
+                                                <span class="h6 mb-0">{{employee.phoneNumber}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Role</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-user-tag text-primary me-2"></i>
+                                                <span class="badge bg-primary">{{employee.user.groups.first}}</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label text-muted small">Salary</label>
+                                            <div class="d-flex align-items-center p-2 bg-white rounded">
+                                                <i class="fas fa-dollar-sign text-primary me-2"></i>
+                                                <span class="h6 mb-0">${{employee.salary}}</span>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        {% if role == 'staff' or request.user != employee.user %}
+        <!-- Tasks Card -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 d-flex align-items-center">
+                            <i class="fas fa-tasks me-2"></i>
+                            Task History
+                        </h4>
+                        <span class="badge bg-light text-primary">
+                            <i class="fas fa-info-circle me-1"></i>
+                            {{tasks|length}} Tasks
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4">Task ID</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Description</th>
+                                    <th class="text-end px-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for task in tasks %}
+                                <tr>
+                                    <td class="px-4">#{{task.id}}</td>
+                                    <td>{{task.startTime|date:"M j, Y"}}</td>
+                                    <td>{{task.endTime|date:"M j, Y"}}</td>
+                                    <td>{{task.description}}</td>
+                                    <td class="text-end px-4">
+                                        <span
+                                            class="badge {% if task.completed %}bg-success{% else %}bg-warning{% endif %}">
+                                            {% if task.completed %}
+                                            <i class="fas fa-check-circle me-1"></i>Completed
+                                            {% else %}
+                                            <i class="fas fa-clock me-1"></i>Pending
+                                            {% endif %}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center py-5 text-muted">
+                                        <i class="fas fa-clipboard-list fa-3x mb-3"></i>
+                                        <p class="mb-0">No tasks found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e0e0e0;
+        padding: 0.6rem 1rem;
+        border-radius: 0.5rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-right: none;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: #0d6efd;
+    }
+
+    .table th {
+        font-weight: 600;
+        border-top: none;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.75em;
+    }
+
+    .bg-light {
+        background-color: #f8f9fa !important;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+</style>
+
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Save button loading state
+    document.querySelector('#saveButton')?.addEventListener('click', function () {
+        this.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...'
+        this.disabled = true
+    })
+</script>
+{% endblock %}

@@ -1,58 +1,258 @@
-<div class="container">
-    <div class="shadow-lg p-5">
-        <form action="" method="POST">
-            {% csrf_token %}
-            <div class="row mt-5">
-                <div class="col-6">
+{% extends 'index.html' %}
+{% block context %}
 
-                    <div class="form-group">
-                        <label for="item-quantity"><b>Number Of Beds: </b></label>
-                        <input type="number" min="0" class="form-control border border-secondary"
-                            value="{{room.numberOfBeds}}" id="id_numberOfBeds" name="numberOfBeds">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="item-quantity"><b>Price: </b></label>
-                        <input type="number" min="0" step="0.01" class="form-control border border-secondary"
-                            value="{{room.price}}" id="id_price" name="price">
-                    </div>
-
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-edit me-2"></i>
+                        Edit Room {{ room.number }}
+                    </h4>
                 </div>
-
-                <div class="col-6">
-
-                    <div class="form-group ">
-                        <label for="item-type"><b>Capacity : </b></label>
-                        <input type="number" min="1" class="form-control border border-secondary"
-                            value="{{room.capacity}}" id="id_capacity" name="capacity">
+                <div class="card-body p-4">
+                    {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show d-flex align-items-center"
+                            role="alert">
+                            <i
+                                class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+                            <div>{{ message }}</div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
                     </div>
+                    {% endif %}
 
-                    <div class="form-group">
-                        <label for="item-quantity"><b>Room Type</b></label>
-                        <select name="roomType" required="" id="id_roomType"
-                            class="form-control border border-secondary">
+                    <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
 
-                            <option value="King" {% if room.roomType == 'King' %} selected {% endif %}>King</option>
+                        <!-- Room Details Section -->
+                        <div class="mb-4">
+                            <h5 class="d-flex align-items-center text-primary mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                Room Details
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="id_capacity" class="form-label">Capacity*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user-friends"></i></span>
+                                        {{ form1.capacity }}
+                                    </div>
+                                </div>
 
-                            <option value="Luxury" {% if room.roomType == 'Luxury' %} selected {% endif %}>Luxury
-                            </option>
+                                <div class="col-md-6">
+                                    <label for="id_numberOfBeds" class="form-label">Number of Beds*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-bed"></i></span>
+                                        {{ form1.numberOfBeds }}
+                                    </div>
+                                </div>
 
-                            <option value="Normal" {% if room.roomType == 'Normal' %} selected {% endif %}>Normal
-                            </option>
+                                <div class="col-md-6">
+                                    <label for="id_roomType" class="form-label">Room Type*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                        {{ form1.roomType }}
+                                    </div>
+                                </div>
 
-                            <option value="Economic" {% if room.roomType == 'Economic' %} selected {% endif %}>Economic
-                            </option>
+                                <div class="col-md-6">
+                                    <label for="id_price" class="form-label">Price per Night*</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
+                                        {{ form1.price }}
+                                    </div>
+                                </div>
 
-                        </select>
-                    </div>
-                    <button type="submit" name="submit" class="btn btn-outline-success float-right">Save
-                        Changes</button>
+                                <div class="col-12">
+                                    <label for="id_description" class="form-label">Room Description</label>
+                                    {{ form1.description }}
+                                    <div class="form-text">Provide a detailed description of the room and its amenities.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload Section -->
+                        <div class="mb-4">
+                            <h5 class="d-flex align-items-center text-primary mb-3">
+                                <i class="fas fa-images me-2"></i>
+                                Room Images
+                            </h5>
+
+                            <div class="row g-4">
+                                <!-- Main Image -->
+                                <div class="col-12">
+                                    <label for="id_main_image" class="form-label">Main Room Image</label>
+                                    {% if room.main_image %}
+                                    <div class="position-relative mb-3">
+                                        <img src="{{ room.main_image.url }}" alt="Current main image"
+                                            class="img-preview rounded shadow-sm">
+                                        <div class="position-absolute bottom-0 start-0 w-100 p-2 text-white"
+                                            style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
+                                            <small>Current main image</small>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {{ form1.main_image }}
+                                    <div class="form-text">Upload a new image to replace the current one. Recommended
+                                        size: 1200x800px</div>
+                                </div>
+
+                                <!-- Additional Images -->
+                                <div class="col-md-4">
+                                    <label for="id_image_1" class="form-label">Additional Image 1</label>
+                                    {% if room.image_1 %}
+                                    <div class="position-relative mb-3">
+                                        <img src="{{ room.image_1.url }}" alt="Additional image 1"
+                                            class="img-preview rounded shadow-sm">
+                                    </div>
+                                    {% endif %}
+                                    {{ form1.image_1 }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="id_image_2" class="form-label">Additional Image 2</label>
+                                    {% if room.image_2 %}
+                                    <div class="position-relative mb-3">
+                                        <img src="{{ room.image_2.url }}" alt="Additional image 2"
+                                            class="img-preview rounded shadow-sm">
+                                    </div>
+                                    {% endif %}
+                                    {{ form1.image_2 }}
+                                </div>
+
+                                <div class="col-md-4">
+                                    <label for="id_image_3" class="form-label">Additional Image 3</label>
+                                    {% if room.image_3 %}
+                                    <div class="position-relative mb-3">
+                                        <img src="{{ room.image_3.url }}" alt="Additional image 3"
+                                            class="img-preview rounded shadow-sm">
+                                    </div>
+                                    {% endif %}
+                                    {{ form1.image_3 }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-center gap-2 mt-4">
+                            <a href="{% url 'room-profile' room.number %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
                 </div>
-
             </div>
-        </form>
-        <br>
-
-
+        </div>
     </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e0e0e0;
+        padding: 0.6rem 1rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-right: none;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: #0d6efd;
+    }
+
+    .img-preview {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    .form-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    textarea.form-control {
+        min-height: 120px;
+    }
+
+    .alert {
+        border: none;
+        border-radius: 8px;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+    @media (max-width: 768px) {
+        .img-preview {
+            height: 150px;
+        }
+    }
+</style>
+
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Preview uploaded images
+    function previewImage(input, imgElement) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                imgElement.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+
+{% endblock %}

@@ -107,29 +107,22 @@ def rooms(request):
 def add_room(request):
     role = str(request.user.groups.all()[0])
     path = role + "/"
+    form = editRoom()
 
     if request.method == "POST":
-        guest = None
-        if role == 'guest':
-            guest = request.user.guest
-        elif role == 'manager' or role == 'admin' or role == 'receptionist':
-            guest = request.user.employee
-
-        # announcement = Announcement(sender = sender, content = request.POST.get('textid'))
-        number = request.POST.get('number')
-        capacity = request.POST.get('capacity')
-        numberOfBeds = request.POST.get('beds')
-        roomType = request.POST.get('roomType')
-        price = request.POST.get('price')
-        print(capacity)
-        room = Room(number=number, capacity=capacity,
-                    numberOfBeds=numberOfBeds, roomType=roomType, price=price)
-
-        room.save()
-        return redirect('rooms')
+        form = editRoom(request.POST, request.FILES)
+        if form.is_valid():
+            room = form.save(commit=False)
+            room.number = request.POST.get('number')
+            room.save()
+            messages.success(request, f'Room {room.number} has been added successfully!')
+            return redirect('rooms')
+        else:
+            messages.error(request, 'Please correct the errors below.')
 
     context = {
-        "role": role
+        "role": role,
+        "form": form
     }
     return render(request, path + "add-room.html", context)
 
@@ -200,10 +193,13 @@ def room_edit(request, pk):
     }
 
     if request.method == 'POST':
-        form1 = editRoom(request.POST, instance=room)
+        form1 = editRoom(request.POST, request.FILES, instance=room)
         if form1.is_valid():
             form1.save()
+            messages.success(request, f'Room {room.number} has been updated successfully!')
             return redirect("room-profile", id=room.number)
+        else:
+            messages.error(request, 'Please correct the errors below.')
     return render(request, path + "room-edit.html", context)
 
 

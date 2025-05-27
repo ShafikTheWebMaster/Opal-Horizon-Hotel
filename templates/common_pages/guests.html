@@ -1,139 +1,344 @@
+{% extends 'index.html' %}
+{% block context %}
 <div class="container py-5">
-
-
-    <div class="table-header row">
-
-        <div class="col-sm-12 col-md-12 col-lg-5 mb-4">
-            <h2>Guest List</h2>
-            <span class="text-muted">This list include guests who has a booking between these days</span>
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i
+                class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-
-        <div class="col-sm-12 col-md-12 col-lg-7">
-            <form action="" method="POST">
+    <!-- Date Filter Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary bg-gradient text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 d-flex align-items-center">
+                    <i class="fas fa-users me-2"></i>
+                    Guest List
+                </h4>
+                <span class="badge bg-light text-primary">
+                    <i class="fas fa-info-circle me-1"></i>
+                    Showing guests with bookings in selected period
+                </span>
+            </div>
+        </div>
+        <div class="card-body">
+            <form action="" method="POST" class="needs-validation" novalidate>
                 {% csrf_token %}
-                <div class="row">
-
-                    <div class="form-group col-4">
-                        <label for="example-date-input" class="col-form-label">First Date</label>
-                        <div class="">
-                            <input class="form-control" type="date"
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Start Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar-alt"></i>
+                            </span>
+                            <input type="date" class="form-control" name="f_day" id="f_day"
                                 value="{{fd.year}}-{% if fd.month < 10 %}0{{fd.month}}{% else %}{{fd.month}}{% endif %}-{% if fd.day < 10 %}0{{fd.day}}{% else %}{{fd.day}}{% endif %}"
-                                name="f_day" id="f_day">
+                                required>
                         </div>
                     </div>
-
-                    <div class="form-group col-4">
-                        <label for="example-date-input" class="col-form-label">Last Date</label>
-                        <div class="">
-                            <input class="form-control" type="date"
+                    <div class="col-md-4">
+                        <label class="form-label">End Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar-alt"></i>
+                            </span>
+                            <input type="date" class="form-control" name="l_day" id="l_day"
                                 value="{{ld.year}}-{% if ld.month < 10 %}0{{ld.month}}{% else %}{{ld.month}}{% endif %}-{% if ld.day < 10 %}0{{ld.day}}{% else %}{{ld.day}}{% endif %}"
-                                name="l_day" id="l_day">
+                                required>
                         </div>
                     </div>
-
-                    <div class="col-4" style="margin-top:38px;">
-                        <button type="submit" class="btn btn-warning" name="filterDate">Filter</button>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100" name="filterDate">
+                            <i class="fas fa-filter me-2"></i>Apply Date Filter
+                        </button>
                     </div>
                 </div>
-
             </form>
         </div>
-
-
     </div>
 
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <th>ID<input type="number" name="id" min="0" value="{{id}}"
-                            class="form-control border border-secondary">
-                    </th>
-                    <th>Name<input type="text" name="name" value="{{name}}"
-                            class="form-control border border-secondary"></th>
-                    <th>Email<input type="text" name="email" value="{{email}}"
-                            class="form-control border border-secondary"></th>
-                    <th>Phone Number<input type="number" name="number" min="0" value="{{number}}"
-                            class="form-control border border-secondary">
-                    </th>
-                    <th>Number of Bookings</th>
-                    <th>Total Day on Hotel</th>
-                    <th>Total Day for Last Booking</th>
-                    <th><button type="submit" name="filterGuest" class="btn btn-warning w-100">Filter</button></th>
-                </form>
-
-            </tr>
-
-
-        </thead>
-        <tbody>
-            {% for g in guests %}
-            <tr>
-                <td>{{g.user.id}}</td>
-                <td>{{g.user.first_name}} {{g.user.last_name}}</td>
-                <td>{{g.user.email}}</td>
-                <td>{{g.phoneNumber}}</td>
-
-                <td>{{g.numOfBooking}}</td>
-                <td>{{g.numOfDays}}</td>
-                <td>{{g.numOfLastBookingDays}}</td>
-
-                <td> <a href="{% url 'guest-profile' g.user.id %}" class="btn btn-primary w-100">View&nbsp;Guest</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-
-    </table>  <br> <br> <br>
-
-        <div class="h3">
-            <form action="" method="POST">
-                {% csrf_token %}
-                <input type="number" name="top" min="0" value="{{topLimit}}" class="d-inline rounded h4"
-                    style="width: 65px;">
-                People With The Most Booking
-            </form>
-
+    <!-- Guest List Card -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <form action="" method="POST" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <th style="min-width: 100px;">
+                                    <label class="form-label mb-2">ID</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-hashtag"></i>
+                                        </span>
+                                        <input type="number" name="id" min="0" value="{{id}}" class="form-control">
+                                    </div>
+                                </th>
+                                <th style="min-width: 200px;">
+                                    <label class="form-label mb-2">Name</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-user"></i>
+                                        </span>
+                                        <input type="text" name="name" value="{{name}}" class="form-control">
+                                    </div>
+                                </th>
+                                <th style="min-width: 200px;">
+                                    <label class="form-label mb-2">Email</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-envelope"></i>
+                                        </span>
+                                        <input type="text" name="email" value="{{email}}" class="form-control">
+                                    </div>
+                                </th>
+                                <th style="min-width: 150px;">
+                                    <label class="form-label mb-2">Phone</label>
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-phone"></i>
+                                        </span>
+                                        <input type="number" name="number" min="0" value="{{number}}"
+                                            class="form-control">
+                                    </div>
+                                </th>
+                                <th style="min-width: 120px;">Bookings</th>
+                                <th style="min-width: 120px;">Total Days</th>
+                                <th style="min-width: 120px;">Last Stay</th>
+                                <th style="min-width: 120px;">
+                                    <label class="form-label mb-2">&nbsp;</label>
+                                    <button type="submit" name="filterGuest" class="btn btn-primary btn-sm w-100">
+                                        <i class="fas fa-search me-2"></i>Search
+                                    </button>
+                                </th>
+                            </form>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for g in guests %}
+                        <tr>
+                            <td class="align-middle">#{{g.user.id}}</td>
+                            <td class="align-middle">{{g.user.first_name}} {{g.user.last_name}}</td>
+                            <td class="align-middle">{{g.user.email}}</td>
+                            <td class="align-middle">{{g.phoneNumber}}</td>
+                            <td class="align-middle">
+                                <span class="badge bg-primary">{{g.numOfBooking}}</span>
+                            </td>
+                            <td class="align-middle">
+                                <span class="badge bg-info">{{g.numOfDays}} days</span>
+                            </td>
+                            <td class="align-middle">
+                                <span class="badge bg-secondary">{{g.numOfLastBookingDays}} days</span>
+                            </td>
+                            <td class="align-middle">
+                                <a href="{% url 'guest-profile' g.user.id %}"
+                                    class="btn btn-outline-primary btn-sm w-100">
+                                    <i class="fas fa-eye me-2"></i>View
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-users fa-2x mb-2"></i>
+                                <p class="mb-0">No guests found matching your criteria</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        
+    </div>
 
-
-        <table class="table table-hover table-striped">
-            <thead class="bg-secondary rounded">
-                <tr>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone Number</th>
-                    <th>Number of Bookings</th>
-                    <th>Total Day on Hotel</th>
-                    <th>Total Day for Last Booking</th>
-                    <th></th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-                {% for g in topList %}
-                <tr>
-                    <td>{{g.user.id}}</td>
-                    <td>{{g.user.first_name}} {{g.user.last_name}}</td>
-                    <td>{{g.user.email}}</td>
-                    <td>{{g.phoneNumber}}</td>
-
-                    <td>{{g.numOfBooking}}</td>
-                    <td>{{g.numOfDays}}</td>
-                    <td>{{g.numOfLastBookingDays}}</td>
-
-                    <td> <a href="{% url 'guest-profile' g.user.id %}"
-                            class="btn btn btn-primary w-100">View&nbsp;Guest</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-
-        </table>
-
+    <!-- Top Guests Card -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary bg-gradient text-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="mb-0 d-flex align-items-center">
+                    <i class="fas fa-trophy me-2"></i>
+                    Top Guests
+                </h4>
+                <form action="" method="POST" class="d-flex align-items-center">
+                    {% csrf_token %}
+                    <div class="input-group input-group-sm" style="width: 120px;">
+                        <input type="number" name="top" min="0" value="{{topLimit}}" class="form-control"
+                            placeholder="Limit" aria-label="Top limit">
+                        <button class="btn btn-light" type="submit">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="px-4">ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Bookings</th>
+                            <th>Total Days</th>
+                            <th>Last Stay</th>
+                            <th class="text-end pe-4">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for g in topList %}
+                        <tr>
+                            <td class="px-4">#{{g.user.id}}</td>
+                            <td>{{g.user.first_name}} {{g.user.last_name}}</td>
+                            <td>{{g.user.email}}</td>
+                            <td>{{g.phoneNumber}}</td>
+                            <td>
+                                <span class="badge bg-primary">{{g.numOfBooking}}</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-info">{{g.numOfDays}} days</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">{{g.numOfLastBookingDays}} days</span>
+                            </td>
+                            <td class="text-end pe-4">
+                                <a href="{% url 'guest-profile' g.user.id %}" class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-eye me-2"></i>View
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-muted">
+                                <i class="fas fa-trophy fa-2x mb-2"></i>
+                                <p class="mb-0">No top guests to display</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e0e0e0;
+        padding: 0.6rem 1rem;
+    }
+
+    .input-group-sm .form-control,
+    .input-group-sm .input-group-text,
+    .input-group-sm .btn {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-right: none;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: #0d6efd;
+    }
+
+    .table th {
+        font-weight: 600;
+        border-top: none;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .btn {
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+    }
+
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.75em;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+    }
+</style>
+
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Date range validation
+    document.getElementById('l_day').addEventListener('change', function () {
+        const startDate = document.getElementById('f_day').value;
+        const endDate = this.value;
+
+        if (startDate && endDate && startDate > endDate) {
+            this.setCustomValidity('End date must be after start date');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+
+    document.getElementById('f_day').addEventListener('change', function () {
+        const endDate = document.getElementById('l_day');
+        if (endDate.value) {
+            endDate.dispatchEvent(new Event('change'));
+        }
+    });
+</script>
+{% endblock %}

@@ -1,140 +1,307 @@
-<div class="container">
-    <div class="shadow-lg p-5">
-        <div class="row mt-5">
-            <div class="col-6">
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <div class="p-2 h4">
-                        <span>Name:</span>
-                        {% if guest.user.id != request.user.id %}
-                        <span class="font-weight-normal">{{guest.user.first_name}} </span>
-                        {% else %}
-                        <input type="text" class="form-control border border-secondary" id="id_first_name"
-                            value="{{guest.user.first_name}}" name="first_name">
-                        {% endif %}
+{% extends 'index.html' %}
+{% block context %}
+<div class="container py-5">
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
+            <i
+                class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
+            <div>{{ message }}</div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="row g-4">
+        <!-- Guest Profile Card -->
+        <div class="col-12">
+            <form action="" method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary bg-gradient text-white py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="mb-0 d-flex align-items-center">
+                                <i class="fas fa-user-circle me-2"></i>
+                                Guest Profile
+                            </h4>
+                            {% if guest.user.id == request.user.id %}
+                            <button type="submit" name="submit" class="btn btn-light" id="saveButton">
+                                <i class="fas fa-save me-2"></i>Save Changes
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
+                    <div class="card-body p-4">
+                        <div class="row g-4">
+                            <!-- Personal Information -->
+                            <div class="col-md-6">
+                                <h5 class="d-flex align-items-center text-primary mb-4">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    Personal Information
+                                </h5>
 
-                    <br>
-                    <div class="p-2 h4">
-                        <span>Surname:</span>
-                        {% if guest.user.id != request.user.id %}
-                        <span class="font-weight-normal"> {{guest.user.last_name}}</span>
-                        {% else %}
-                        <input type="text" class="form-control border border-secondary" id="id_last_name"
-                            value="{{guest.user.last_name}}" name="last_name">
-                        {% endif %}
+                                <div class="mb-3">
+                                    <label class="form-label">First Name</label>
+                                    {% if guest.user.id == request.user.id %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="id_first_name" name="first_name"
+                                            value="{{guest.user.first_name}}" required>
+                                    </div>
+                                    {% else %}
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user text-primary me-2"></i>
+                                        <span class="h6 mb-0">{{guest.user.first_name}}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Last Name</label>
+                                    {% if guest.user.id == request.user.id %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                        <input type="text" class="form-control" id="id_last_name" name="last_name"
+                                            value="{{guest.user.last_name}}" required>
+                                    </div>
+                                    {% else %}
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-user text-primary me-2"></i>
+                                        <span class="h6 mb-0">{{guest.user.last_name}}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Email</label>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-envelope text-primary me-2"></i>
+                                        <span class="h6 mb-0">{{guest.user.email}}</span>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Member Since</label>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-calendar text-primary me-2"></i>
+                                        <span class="h6 mb-0">{{guest.user.date_joined|date:"F j, Y"}}</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Contact Information -->
+                            <div class="col-md-6">
+                                <h5 class="d-flex align-items-center text-primary mb-4">
+                                    <i class="fas fa-address-card me-2"></i>
+                                    Contact Information
+                                </h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Phone Number</label>
+                                    {% if guest.user.id == request.user.id %}
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                        <input type="text" class="form-control" id="id_phoneNumber" name="phoneNumber"
+                                            value="{{guest.phoneNumber}}" required>
+                                    </div>
+                                    {% else %}
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-phone text-primary me-2"></i>
+                                        <span class="h6 mb-0">{{guest.phoneNumber}}</span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="p-2 h4">
-                        <span>Email :</span>
-                        <span class="font-weight-normal">{{guest.user.email}}</span>
-                    </div>
-
-                    <br>
-
-                    <div class="p-2 h4">
-                        <span>Account Creation Date:</span>
-                        <span class="font-weight-normal">{{guest.user.date_joined}}</span>
-                    </div>
-
-            </div>
-
-            <div class="col-6">
-
-                <div class="p-2 h4">
-                    <span>Phone Number: </span>
-                    {% if guest.user.id != request.user.id %}
-
-                    <span class="font-weight-normal">{{guest.phoneNumber}}</span>
-                    {% else %}
-                    <input type="text" class="form-control border border-secondary" id="id_phoneNumber"
-                        value="{{guest.phoneNumber}}" name="phoneNumber">
-                    {% endif %}
                 </div>
-
-                <br>
-                {% if guest.user.id == request.user.id %}
-                <button type="submit" name="submit" class="btn btn-success float-end">Save Changes</button>
-                {% endif %}
-                </form>
-            </div>
+            </form>
         </div>
 
-        <br>
-
         {% if eventAttendees.first != None %}
-        <div class="row">
-            <h4>List Of Attended Events</h4>
-            <table class="table table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th>Type</th>
-                        <th>Location</th>
-                        <th>Start Date</th>
-                        <th>End Date</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    {% for eveAt in eventAttendees %}
-                    <tr>
-                        <td>{{eveAt.eventType}}</td>
-                        <td>{{eveAt.location}}</td>
-                        <td>{{eveAt.startDate}}</td>
-                        <td>{{eveAt.endtDate}}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-
-            </table>
+        <!-- Events Card -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-calendar-alt me-2"></i>
+                        Event History
+                    </h4>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4">Event Type</th>
+                                    <th>Location</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for event in eventAttendees %}
+                                <tr>
+                                    <td class="px-4">{{event.eventType}}</td>
+                                    <td>{{event.location}}</td>
+                                    <td>{{event.startDate|date:"M j, Y"}}</td>
+                                    <td>{{event.endtDate|date:"M j, Y"}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
 
-        <br>
-
-        <div class="row">
-            <div class="table-responsive table-striped my-5">
-                <div class="table-header row">
-
-                    <div class="col-sm-12 col-md-12 col-lg-4 mb-4">
-                        <h2>All Past Reservations</h2>
-                    </div>
-
+        <!-- Reservations Card -->
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary bg-gradient text-white py-3">
+                    <h4 class="mb-0 d-flex align-items-center">
+                        <i class="fas fa-history me-2"></i>
+                        Reservation History
+                    </h4>
                 </div>
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Reservation Date</th>
-                            <th>Check in Date</th>
-                            <th>Check out Date</th>
-                            <th>Number of residents</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for bo in bookings %}
-                        <tr>
-                            <td>{{bo.dateOfReservation}}</td>
-                            <td>{{bo.startDate}}</td>
-                            <td>{{bo.endDate}}</td>
-                            <td>{{bo.numOfResidents}}</td>
-
-                            {% if role == "guest"%}
-                            <form action="{% url 'request-refund' %}" method="POST">
-                                {% csrf_token %}
-                                <input type="hidden" value="{{bo.id}}" name="bookingId">
-                                <td><button type="submit" class="btn btn-outline-success btn-lg" name="refReq">Send
-                                        Refund Request</button></td>
-                            </form>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="px-4">Reservation Date</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Guests</th>
+                                    {% if role == "guest" %}
+                                    <th class="text-end pe-4">Actions</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td class="px-4">{{booking.dateOfReservation|date:"M j, Y"}}</td>
+                                    <td>{{booking.startDate|date:"M j, Y"}}</td>
+                                    <td>{{booking.endDate|date:"M j, Y"}}</td>
+                                    <td>{{booking.numOfResidents}}</td>
+                                    {% if role == "guest" %}
+                                    <td class="text-end pe-4">
+                                        <form action="{% url 'request-refund' %}" method="POST" class="d-inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" value="{{booking.id}}" name="bookingId">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm" name="refReq">
+                                                <i class="fas fa-undo me-2"></i>Request Refund
+                                            </button>
+                                        </form>
+                                    </td>
+                                    {% endif %}
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="{% if role == 'guest' %}5{% else %}4{% endif %}"
+                                        class="text-center py-4 text-muted">
+                                        <i class="fas fa-bed fa-2x mb-2"></i>
+                                        <p class="mb-0">No reservations found</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .form-control,
+    .form-select {
+        border: 1px solid #e0e0e0;
+        padding: 0.6rem 1rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group-text {
+        background-color: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        border-right: none;
+    }
+
+    .input-group .form-control {
+        border-left: none;
+    }
+
+    .input-group:focus-within {
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    .input-group:focus-within .input-group-text,
+    .input-group:focus-within .form-control {
+        border-color: #0d6efd;
+    }
+
+    .table th {
+        font-weight: 600;
+        border-top: none;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .btn {
+        padding: 0.6rem 1.5rem;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+
+    .btn-sm {
+        padding: 0.4rem 1rem;
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.25rem !important;
+        }
+    }
+</style>
+
+<script>
+    // Form validation
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    // Save button loading state
+    document.getElementById('saveButton')?.addEventListener('click', function (e) {
+        this.disabled = true;
+        this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Saving...';
+    });
+</script>
+{% endblock %}
