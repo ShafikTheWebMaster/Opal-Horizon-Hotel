@@ -82,7 +82,7 @@
                                             <label class="form-label text-muted small">First Name</label>
                                             <div class="d-flex align-items-center p-2 bg-white rounded">
                                                 <i class="fas fa-user text-primary me-2"></i>
-                                                <span class="h6 mb-0">{{employee.user.first_name}}</span>
+                                                <span class="h6 mb-0">{% if employee.user %}{{ employee.user.first_name }}{% else %}N/A{% endif %}</span>
                                             </div>
                                         </div>
 
@@ -90,7 +90,7 @@
                                             <label class="form-label text-muted small">Last Name</label>
                                             <div class="d-flex align-items-center p-2 bg-white rounded">
                                                 <i class="fas fa-user text-primary me-2"></i>
-                                                <span class="h6 mb-0">{{employee.user.last_name}}</span>
+                                                <span class="h6 mb-0">{% if employee.user %}{{ employee.user.last_name }}{% else %}N/A{% endif %}</span>
                                             </div>
                                         </div>
 
@@ -98,7 +98,7 @@
                                             <label class="form-label text-muted small">Email</label>
                                             <div class="d-flex align-items-center p-2 bg-white rounded">
                                                 <i class="fas fa-envelope text-primary me-2"></i>
-                                                <span class="h6 mb-0">{{employee.user.email}}</span>
+                                                <span class="h6 mb-0">{% if employee.user %}{{ employee.user.email }}{% else %}N/A{% endif %}</span>
                                             </div>
                                         </div>
                                         {% endif %}

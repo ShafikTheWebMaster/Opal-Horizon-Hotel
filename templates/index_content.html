@@ -42,8 +42,7 @@
                         {% if room.description %}
                         {{ room.description|truncatewords:20 }}
                         {% else %}
-                        A comfortable {{ room.roomType }} room with {{ room.numberOfBeds }} bed{{
-                        room.numberOfBeds|pluralize }}.
+                        A comfortable {{ room.roomType }} room with {{ room.numberOfBeds }} bed{{ room.numberOfBeds|pluralize }}.
                         {% endif %}
                     </p>
                     <div class="d-flex justify-content-between align-items-center">

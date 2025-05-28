@@ -247,7 +247,7 @@ def employees(request):
     role = str(request.user.groups.all()[0])
     path = role + "/"
 
-    employees = Employee.objects.all()
+    employees = Employee.objects.select_related('user').all()
 
     if request.method == "POST":
         if "filter" in request.POST:

@@ -1,45 +1,299 @@
+{% extends '../index.html' %}
+
+{% block context %}
 <div class="container py-5">
-
-    <div class="table-responsive">
-        <div class="table-header row">
-
-            <div class="col-sm-12 col-md-12 col-lg-4 mb-4">
-                <h2>Room Services</h2>
-                <span class="text-muted">The list include last 1 month room services</span>
-            </div>
-
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm border-0"
+            role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <form action="" method="POST">
-                        {% csrf_token %}
-                        <th>Guest Name<input type="text" class="form-control border border-secondary"></th>
-                        <th>Room Number<input type="text" class="form-control border border-secondary"></th>
-                        <th>Type<input type="text" class="form-control border border-secondary"></th>
-                        <th>Created Date<input type="date" class="form-control border border-secondary"></th>
-                        <th>Price<input type="text" class="form-control border border-secondary"></th>
-                        <th><button type="submit" class="btn btn-warning">Filter</button></th>
-                    </form>
-                </tr>
-            </thead>
-            <tbody>
-                {% for rs in room_services %}
-                <tr>
-                    <td><a
-                            href="{% url 'guest-profile' rs.curBooking.guest.user.id %}">{{rs.curBooking.guest.user.first_name}}</a>
-                    </td>
-                    <td><a href="{% url 'room-profile' rs.room.number }">{{rs.room.number}}</a></td>
-                    <td>{{rs.servicesType}}</td>
-                    <td>{{rs.createdDate}}</td>
-                    <td>{{rs.price}}</td>
-                    <td> <a href="" class="btn btn-sm btn-danger px-3">Delete</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
+        {% endfor %}
+    </div>
+    {% endif %}
 
-        </table>
-
+    <div class="row mb-4 align-items-center">
+        <div class="col-lg-12">
+            <h4 class="mb-0 d-flex align-items-center text-primary">
+                <div class="icon-circle bg-primary bg-opacity-10 me-3">
+                    <i class="fas fa-concierge-bell text-primary"></i>
+                </div>
+                Room Services
+            </h4>
+            <p class="text-muted mt-2 mb-0">
+                <i class="fas fa-clock me-2"></i>
+                Showing room services from the last month
+            </p>
+        </div>
     </div>
 
+    <div class="card shadow-sm border-0 hover-lift mb-4">
+        <div class="card-body">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Guest Name</label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Guest Name">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Room Number</label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Room #">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Service Type</label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Type">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Date</label>
+                        <input type="date" class="form-control form-control-lg">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Price</label>
+                        <input type="text" class="form-control form-control-lg" placeholder="Price">
+                    </div>
+                    <div class="col-lg-2 col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 shadow-sm hover-lift">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 hover-lift">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4 py-3 text-uppercase small text-muted">Guest</th>
+                            <th class="py-3 text-uppercase small text-muted">Room</th>
+                            <th class="py-3 text-uppercase small text-muted">Service Type</th>
+                            <th class="py-3 text-uppercase small text-muted">Date</th>
+                            <th class="py-3 text-uppercase small text-muted">Price</th>
+                            <th class="px-4 py-3 text-end text-uppercase small text-muted">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for rs in room_services %}
+                        <tr class="hover-shadow-sm">
+                            <td class="px-4">
+                                <a href="{% url 'guest-profile' rs.curBooking.guest.user.id %}"
+                                    class="text-decoration-none">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-primary bg-opacity-10 me-3">
+                                            <i class="fas fa-user text-primary"></i>
+                                        </div>
+                                        <div class="fw-bold text-dark">{{rs.curBooking.guest.user.first_name}}</div>
+                                    </div>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'room-profile' rs.room.number %}" class="text-decoration-none">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">
+                                        <i class="fas fa-door-open me-1"></i>
+                                        Room #{{rs.room.number}}
+                                    </span>
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-info bg-opacity-10 text-info">
+                                    <i class="fas fa-tag me-1"></i>
+                                    {{rs.servicesType}}
+                                </span>
+                            </td>
+                            <td class="text-muted">
+                                <i class="far fa-calendar-alt me-1"></i>
+                                {{rs.createdDate}}
+                            </td>
+                            <td>
+                                <span class="badge bg-success bg-opacity-10 text-success">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    {{rs.price}}
+                                </span>
+                            </td>
+                            <td class="text-end px-4">
+                                <a href="" class="btn btn-outline-danger btn-sm rounded-pill hover-lift">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Card Styles */
+    .card {
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+
+    /* Hover Effects */
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .hover-shadow-sm:hover {
+        background-color: rgba(13, 110, 253, 0.02) !important;
+    }
+
+    /* Form Controls */
+    .form-control {
+        border: 1.5px solid #e0e0e0;
+        padding: 0.8rem 1.2rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-lg {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #0b5ed7, #084298);
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-danger {
+        border-width: 1.5px;
+    }
+
+    /* Avatar and Icons */
+    .icon-circle,
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-circle i {
+        font-size: 1.2rem;
+    }
+
+    /* Table Styles */
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        font-weight: 600;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    /* Badge Styles */
+    .badge {
+        font-weight: 500;
+        padding: 0.6em 1em;
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
+        border-radius: 8px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.25rem !important;
+        }
+
+        .btn-lg {
+            padding: 0.6rem 1.2rem;
+        }
+
+        .table td,
+        .table th {
+            white-space: nowrap;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .table tbody tr {
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    /* Custom Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #0d6efd;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #0b5ed7;
+    }
+</style>
+{% endblock %}

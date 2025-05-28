@@ -16,10 +16,10 @@
             </div>
             <div class="toast-body">
                 {{ message }}
-            </div>
-        </div>
+                </div>
+                </div>
         {% endfor %}
-    </div>
+                </div>
     {% endif %}
 
     <div class="row g-4">
@@ -38,8 +38,8 @@
                         <div class="position-absolute bottom-0 start-0 w-100 p-3 text-white"
                             style="background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);">
                             <h3 class="mb-0">Room {{ room.number }}</h3>
-                        </div>
-                    </div>
+                </div>
+                </div>
                     {% endif %}
 
                     <div class="row g-3">
@@ -47,7 +47,7 @@
                         <div class="col-4">
                             <img src="{{ room.image_1.url }}" alt="Room image 1"
                                 class="img-fluid rounded shadow-sm gallery-img">
-                        </div>
+            </div>
                         {% endif %}
 
                         {% if room.image_2 %}
@@ -196,11 +196,11 @@
                                     <th>Guest</th>
                                     <th>Start Date</th>
                                     <th>End Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    </tr>
+                </thead>
+                <tbody>
                                 {% for booking in bookings %}
-                                <tr>
+                    <tr>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <i class="fas fa-user-circle text-primary me-2"></i>
@@ -224,10 +224,10 @@
                                             <p class="mb-0">No bookings found for this room</p>
                                         </div>
                                     </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
                     </div>
                 </div>
             </div>
@@ -276,7 +276,7 @@
             </form>
         </div>
     </div>
-</div>
+        </div>
 
 <!-- Delete Room Modal -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">

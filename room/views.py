@@ -114,11 +114,11 @@ def add_room(request):
         if form.is_valid():
             room = form.save(commit=False)
             room.number = request.POST.get('number')
-            room.save()
-            messages.success(request, f'Room {room.number} has been added successfully!')
-            return redirect('rooms')
-        else:
-            messages.error(request, 'Please correct the errors below.')
+        room.save()
+        messages.success(request, f'Room {room.number} has been added successfully!')
+        return redirect('rooms')
+    else:
+        messages.error(request, 'Please correct the errors below.')
 
     context = {
         "role": role,

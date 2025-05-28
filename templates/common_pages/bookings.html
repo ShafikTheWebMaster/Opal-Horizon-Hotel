@@ -1,63 +1,306 @@
+{% extends '../index.html' %}
+
+{% block context %}
 <div class="container py-5">
-
-
-    <div class="table-header row">
-
-        <div class="col-sm-12 col-md-12 col-lg-4 mb-4">
-            <h2>Bookings List</h2>
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm border-0"
+            role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            {{message}}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 
+    <div class="row mb-4 align-items-center">
+        <div class="col-lg-12">
+            <h4 class="mb-0 d-flex align-items-center text-primary">
+                <div class="icon-circle bg-primary bg-opacity-10 me-3">
+                    <i class="fas fa-calendar-check text-primary"></i>
+                </div>
+                Bookings List
+            </h4>
+        </div>
     </div>
 
-    <table class="table table-hover table-striped">
-        <thead class="bg-secondary rounded">
-            <tr>
-                <form action="" method="POST">
-                    {% csrf_token %}
-                    <th>Room Number<input type="number" min="0" name="number" value="{{number}}"
-                            class="form-control border border-secondary"></th>
-                    <th>Guest Name<input type="text" name="name" value="{{name}}"
-                            class="form-control border border-secondary"></th>
-                    <th>Date Of Reservation<input type="date" name="rez" value="{{rez}}"
-                            class="form-control border border-secondary"></th>
-                    <th>Start Day<input type="date" name="fd" value="{{fd}}"
-                            class="form-control border border-secondary"></th>
-                    <th>End Day<input type="date" name="ed" value="{{ed}}" class="form-control border border-secondary">
-                    </th>
-                    <th class="pb-5">Number of Dependees</th>
-                    <th class="pb-5">Total amount</th>
-                    <th><button type="submit" name="filter" class="btn btn-warning w-100">Filter</button></th>
-                </form>
+    <div class="card shadow-sm border-0 hover-lift mb-4">
+        <div class="card-body">
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row g-3">
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Room Number</label>
+                        <input type="number" min="0" name="number" value="{{number}}"
+                            class="form-control form-control-lg" placeholder="Room #">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Guest Name</label>
+                        <input type="text" name="name" value="{{name}}" class="form-control form-control-lg"
+                            placeholder="Guest Name">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Reservation Date</label>
+                        <input type="date" name="rez" value="{{rez}}" class="form-control form-control-lg">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">Start Date</label>
+                        <input type="date" name="fd" value="{{fd}}" class="form-control form-control-lg">
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <label class="form-label text-muted small text-uppercase">End Date</label>
+                        <input type="date" name="ed" value="{{ed}}" class="form-control form-control-lg">
+                    </div>
+                    <div class="col-lg-2 col-md-4 d-flex align-items-end">
+                        <button type="submit" name="filter" class="btn btn-primary btn-lg w-100 shadow-sm hover-lift">
+                            <i class="fas fa-filter me-2"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
-            </tr>
-
-        </thead>
-        <tbody>
-            {% for b in bookings %}
-            <tr>
-                <td><a href="{% url 'room-profile' b.roomNumber.number %}">{{b.roomNumber.number}}</a></td>
-                <td><a href="{% url 'guest-profile' b.guest.user.id %}">{{b.guest.user.first_name}}</a></td>
-                <td>{{ b.dateOfReservation }}</td>
-                <td>{{ b.startDate }}</td>
-                <td>{{ b.endDate }}</td>
-                <td>{{ b.numOfDep }}</td>
-                <td>
-                    {% for key, value in totals.items %}
-                    {% if key == b %}
-                    {{ value }}
-                    {% endif %}
-                    {% endfor %}
-                </td>
-                {% if role == "admin" or role == 'manager' %}
-                <td> <a href="{% url 'deleteBooking' b.id %}"
-                        class="btn btn-sm btn-outline-danger">Delete&nbsp;Booking</a></td>
-                {% endif %}
-            </tr>
-            {% endfor %}
-        </tbody>
-
-    </table>
-
-
-
+    <div class="card shadow-sm border-0 hover-lift">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="px-4 py-3 text-uppercase small text-muted">Room</th>
+                            <th class="py-3 text-uppercase small text-muted">Guest</th>
+                            <th class="py-3 text-uppercase small text-muted">Reservation Date</th>
+                            <th class="py-3 text-uppercase small text-muted">Check In</th>
+                            <th class="py-3 text-uppercase small text-muted">Check Out</th>
+                            <th class="py-3 text-uppercase small text-muted">Dependees</th>
+                            <th class="py-3 text-uppercase small text-muted">Total Amount</th>
+                            {% if role == "admin" or role == 'manager' %}
+                            <th class="px-4 py-3 text-end text-uppercase small text-muted">Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in bookings %}
+                        <tr class="hover-shadow-sm">
+                            <td class="px-4">
+                                <a href="{% url 'room-profile' b.roomNumber.number %}" class="text-decoration-none">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary">
+                                        <i class="fas fa-door-open me-1"></i>
+                                        Room #{{b.roomNumber.number}}
+                                    </span>
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{% url 'guest-profile' b.guest.user.id %}" class="text-decoration-none">
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle bg-primary bg-opacity-10 me-3">
+                                            <i class="fas fa-user text-primary"></i>
+                                        </div>
+                                        <div class="fw-bold text-dark">{{b.guest.user.first_name}}</div>
+                                    </div>
+                                </a>
+                            </td>
+                            <td class="text-muted">{{ b.dateOfReservation }}</td>
+                            <td class="text-muted">{{ b.startDate }}</td>
+                            <td class="text-muted">{{ b.endDate }}</td>
+                            <td>
+                                <span class="badge bg-info bg-opacity-10 text-info">
+                                    <i class="fas fa-users me-1"></i>
+                                    {{ b.numOfDep }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success bg-opacity-10 text-success">
+                                    <i class="fas fa-dollar-sign me-1"></i>
+                                    {% for key, value in totals.items %}
+                                    {% if key == b %}
+                                    {{ value }}
+                                    {% endif %}
+                                    {% endfor %}
+                                </span>
+                            </td>
+                            {% if role == "admin" or role == 'manager' %}
+                            <td class="text-end px-4">
+                                <a href="{% url 'deleteBooking' b.id %}"
+                                    class="btn btn-outline-danger btn-sm rounded-pill hover-lift">
+                                    <i class="fas fa-trash-alt me-2"></i>Delete
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    /* Card Styles */
+    .card {
+        border-radius: 16px;
+        transition: all 0.3s ease;
+    }
+
+    /* Hover Effects */
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .hover-shadow-sm:hover {
+        background-color: rgba(13, 110, 253, 0.02) !important;
+    }
+
+    /* Form Controls */
+    .form-control {
+        border: 1.5px solid #e0e0e0;
+        padding: 0.8rem 1.2rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-lg {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-sm {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #0b5ed7, #084298);
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-danger {
+        border-width: 1.5px;
+    }
+
+    /* Avatar and Icons */
+    .icon-circle,
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-circle i {
+        font-size: 1.2rem;
+    }
+
+    /* Table Styles */
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table th {
+        font-weight: 600;
+        border-top: none;
+        white-space: nowrap;
+    }
+
+    .table td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    /* Badge Styles */
+    .badge {
+        font-weight: 500;
+        padding: 0.6em 1em;
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
+        border-radius: 8px;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1.25rem !important;
+        }
+
+        .btn-lg {
+            padding: 0.6rem 1.2rem;
+        }
+
+        .table td,
+        .table th {
+            white-space: nowrap;
+        }
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .table tbody tr {
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    /* Custom Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #0d6efd;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #0b5ed7;
+    }
+</style>
+{% endblock %}

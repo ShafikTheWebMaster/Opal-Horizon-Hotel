@@ -3,14 +3,14 @@
 <div class="container py-5">
     {% if messages %}
     <div class="messages mb-4">
-        {% for message in messages %}
+            {% for message in messages %}
         <div class="alert alert-{{ message.tags }} alert-dismissible fade show d-flex align-items-center" role="alert">
             <i
                 class="fas {% if message.tags == 'error' %}fa-exclamation-circle{% else %}fa-check-circle{% endif %} me-2"></i>
             <div>{{ message }}</div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
     </div>
     {% endif %}
 
@@ -74,7 +74,7 @@
                                     <strong>{{ room.roomType }}</strong>
                                 </div>
                             </div>
-                        </div>
+    </div>
 
                         <div class="col-12">
                             <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
@@ -101,12 +101,12 @@
                 </div>
                 <div class="card-body">
                     <form action="" method="POST" id="bookingForm" class="needs-validation" novalidate>
-                        {% csrf_token %}
-                        <input type="hidden" value="{{ room }}" name="roomid">
-                        <input type="date" value="{{ fd }}" name="fd" class="d-none">
-                        <input type="date" value="{{ ld }}" name="ld" class="d-none">
+    {% csrf_token %}
+        <input type="hidden" value="{{ room }}" name="roomid">
+        <input type="date" value="{{ fd }}" name="fd" class="d-none">
+        <input type="date" value="{{ ld }}" name="ld" class="d-none">
 
-                        {% if room.capacity > 1 %}
+        {% if room.capacity > 1 %}
                         <div class="mb-4">
                             <h5 class="d-flex align-items-center text-primary mb-3">
                                 <i class="fas fa-users me-2"></i>
@@ -124,7 +124,7 @@
                                             <i class="fas fa-plus me-2"></i>Add
                                         </button>
                                     </div>
-                                </div>
+        </div>
 
                                 <div class="col-12">
                                     <div class="card bg-light">
@@ -132,7 +132,7 @@
                                             <h6 class="mb-0">Added Guests</h6>
                                         </div>
                                         <ul class="list-group list-group-flush" id="myList">
-                                            {% for n in names %}
+                {% for n in names %}
                                             <li class="list-group-item d-flex align-items-center">
                                                 <i class="fas fa-user text-primary me-2"></i>
                                                 {{ n }}
@@ -142,16 +142,16 @@
                                             <li class="list-group-item text-muted text-center py-4">
                                                 <i class="fas fa-users fa-2x mb-2"></i>
                                                 <p class="mb-0">No additional guests added yet</p>
-                                            </li>
-                                            {% endfor %}
-                                        </ul>
+                </li>
+                {% endfor %}
+            </ul>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        {% endif %}
+        </div>
+        {% endif %}
 
-                        {% if role == "receptionist" %}
+        {% if role == "receptionist" %}
                         <div class="mb-4">
                             <label for="id_guest" class="form-label">Select Guest</label>
                             <div class="input-group">
@@ -160,14 +160,14 @@
                                 </span>
                                 <select class="form-select" name="guest" required id="id_guest">
                                     <option value="">Choose a guest...</option>
-                                    {% for guest in guests %}
+            {% for guest in guests %}
                                     <option value="{{guest.id}}">{{guest.user.first_name}} {{guest.user.last_name}}
                                     </option>
-                                    {% endfor %}
-                                </select>
+            {% endfor %}
+        </select>
                             </div>
                         </div>
-                        {% endif %}
+        {% endif %}
 
                         <button type="submit" class="btn btn-primary w-100" name="bookGuestButton" id="bookButton">
                             <i class="fas fa-calendar-check me-2"></i>Confirm Booking

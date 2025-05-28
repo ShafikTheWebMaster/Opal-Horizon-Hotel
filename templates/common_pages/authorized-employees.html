@@ -1,9 +1,12 @@
-<!-- Employees List Page -->
+
+
+{% block context %}
 <div class="container py-5">
     {% if messages %}
     <div class="messages mb-4">
         {% for message in messages %}
-        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">
+        <div class="alert alert-success alert-dismissible fade show d-flex align-items-center shadow-sm border-0"
+            role="alert">
             <i class="fas fa-check-circle me-2"></i>
             {{message}}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -11,52 +14,58 @@
         {% endfor %}
     </div>
     {% endif %}
+
     <div class="row mb-4 align-items-center">
         <div class="col-lg-9 col-md-8 col-sm-12">
-            <h4 class="mb-0 d-flex align-items-center">
-                <i class="fas fa-users me-2"></i>
+            <h4 class="mb-0 d-flex align-items-center text-primary">
+                <div class="icon-circle bg-primary bg-opacity-10 me-3">
+                    <i class="fas fa-users text-primary"></i>
+                </div>
                 Employee List
             </h4>
         </div>
 
         {% if role == "manager" or role == "admin" %}
         <div class="col-lg-3 col-md-4 col-sm-12 text-sm-start text-md-end text-lg-end">
-            <a href="{% url 'add-employee' %}" class="btn btn-primary">
+            <a href="{% url 'add-employee' %}" class="btn btn-primary btn-lg shadow-sm hover-lift">
                 <i class="fas fa-user-plus me-2"></i>Add New Employee
             </a>
         </div>
         {% endif %}
     </div>
 
-    <div class="card shadow-sm mb-4">
+    <div class="card shadow-sm mb-4 border-0 hover-lift">
         <div class="card-body">
             <form action="" method="POST">
                 {% csrf_token %}
                 <div class="row g-3">
                     <div class="col-lg-1 col-md-2">
-                        <label class="form-label">ID</label>
-                        <input type="number" name="id" value="{{id}}" class="form-control" placeholder="ID">
+                        <label class="form-label text-muted small text-uppercase">ID</label>
+                        <input type="number" name="id" value="{{id}}" class="form-control form-control-lg"
+                            placeholder="ID">
                     </div>
                     <div class="col-lg-2 col-md-3">
-                        <label class="form-label">Name</label>
-                        <input type="text" name="name" value="{{name}}" class="form-control" placeholder="Name">
+                        <label class="form-label text-muted small text-uppercase">Name</label>
+                        <input type="text" name="name" value="{{name}}" class="form-control form-control-lg"
+                            placeholder="Name">
                     </div>
                     <div class="col-lg-3 col-md-3">
-                        <label class="form-label">Email</label>
-                        <input type="text" name="email" value="{{email}}" class="form-control" placeholder="Email">
+                        <label class="form-label text-muted small text-uppercase">Email</label>
+                        <input type="text" name="email" value="{{email}}" class="form-control form-control-lg"
+                            placeholder="Email">
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <label class="form-label">Phone</label>
-                        <input type="number" name="number" value="{{number}}" class="form-control"
+                        <label class="form-label text-muted small text-uppercase">Phone</label>
+                        <input type="number" name="number" value="{{number}}" class="form-control form-control-lg"
                             placeholder="Phone Number">
                     </div>
                     <div class="col-lg-2 col-md-2">
-                        <label class="form-label">Role</label>
-                        <input type="text" name="filterRole" value="{{filterRole}}" class="form-control"
+                        <label class="form-label text-muted small text-uppercase">Role</label>
+                        <input type="text" name="filterRole" value="{{filterRole}}" class="form-control form-control-lg"
                             placeholder="Role">
                     </div>
                     <div class="col-lg-2 col-md-12 d-flex align-items-end">
-                        <button type="submit" name="filter" class="btn btn-primary w-100">
+                        <button type="submit" name="filter" class="btn btn-primary btn-lg w-100 shadow-sm hover-lift">
                             <i class="fas fa-search me-2"></i>Filter
                         </button>
                     </div>
@@ -65,48 +74,48 @@
         </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0 hover-lift">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead class="bg-light">
                         <tr>
-                            <th class="px-4">ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Phone Number</th>
-                            <th>Role</th>
-                            <th class="text-end px-4">Actions</th>
+                            <th class="px-4 py-3 text-uppercase small text-muted">ID</th>
+                            <th class="py-3 text-uppercase small text-muted">Name</th>
+                            <th class="py-3 text-uppercase small text-muted">Email</th>
+                            <th class="py-3 text-uppercase small text-muted">Phone Number</th>
+                            <th class="py-3 text-uppercase small text-muted">Role</th>
+                            <th class="px-4 py-3 text-end text-uppercase small text-muted">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for employee in employees %}
-                        <tr>
+                        <tr class="hover-shadow-sm">
                             <td class="px-4">#{{ employee.user.id }}</td>
                             <td>
                                 <div class="d-flex align-items-center">
-                                    <div class="bg-light rounded-circle p-2 me-3">
+                                    <div class="avatar-circle bg-primary bg-opacity-10 me-3">
                                         <i class="fas fa-user text-primary"></i>
                                     </div>
                                     <div>
-                                        <div class="fw-bold">{{ employee.user.first_name }} {{ employee.user.last_name
-                                            }}</div>
-                                        <small class="text-muted">{{ employee.user.email }}</small>
+                                    <div class="fw-bold text-dark">{{ employee.user.first_name }} {% if employee.user.last_name %}{{ employee.user.last_name }}{% else %}N/A{% endif %}</div>
+                                    <small class="text-muted">{{ employee.user.email }}</small>
                                     </div>
                                 </div>
                             </td>
-                            <td>{{ employee.user.email }}</td>
-                            <td>{{ employee.phoneNumber }}</td>
+                            <td class="text-muted">{{ employee.user.email }}</td>
+                            <td class="text-muted">{{ employee.phoneNumber }}</td>
                             <td>
-                                <span class="badge bg-primary">
+                                <span
+                                    class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">
                                     <i class="fas fa-user-tag me-1"></i>
                                     {{ employee.user.groups.first }}
                                 </span>
                             </td>
                             <td class="text-end px-4">
                                 <a href="{% url 'employee-profile' employee.user.id %}"
-                                    class="btn btn-outline-primary btn-sm">
-                                    <i class="fas fa-eye me-1"></i>Detail
+                                    class="btn btn-outline-primary btn-lg rounded-pill px-4 hover-lift">
+                                    <i class="fas fa-eye me-2"></i>View Details
                                 </a>
                             </td>
                         </tr>
@@ -119,46 +128,163 @@
 </div>
 
 <style>
+    /* Card Styles */
     .card {
-        border: none;
-        border-radius: 10px;
-        overflow: hidden;
+        border-radius: 16px;
+        transition: all 0.3s ease;
     }
 
+    /* Hover Effects */
+    .hover-lift {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .hover-lift:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.08) !important;
+    }
+
+    .hover-shadow-sm:hover {
+        background-color: rgba(13, 110, 253, 0.02) !important;
+    }
+
+    /* Form Controls */
     .form-control {
-        border: 1px solid #e0e0e0;
-        padding: 0.6rem 1rem;
-        border-radius: 0.5rem;
+        border: 1.5px solid #e0e0e0;
+        padding: 0.8rem 1.2rem;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
     }
 
     .form-control:focus {
         border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Buttons */
+    .btn {
+        border-radius: 12px;
+        font-weight: 500;
+        padding: 0.8rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+
+    .btn-lg {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #0d6efd, #0a58ca);
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #0b5ed7, #084298);
+        transform: translateY(-1px);
+    }
+
+    .btn-outline-primary {
+        border-width: 1.5px;
+    }
+
+    /* Avatar and Icons */
+    .icon-circle,
+    .avatar-circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .icon-circle i {
+        font-size: 1.2rem;
+    }
+
+    /* Table Styles */
+    .table {
+        margin-bottom: 0;
     }
 
     .table th {
         font-weight: 600;
         border-top: none;
+        white-space: nowrap;
     }
 
+    .table td {
+        padding: 1rem 0.75rem;
+        vertical-align: middle;
+    }
+
+    /* Badge Styles */
     .badge {
         font-weight: 500;
-        padding: 0.5em 0.75em;
+        padding: 0.6em 1em;
+        font-size: 0.85em;
+        letter-spacing: 0.5px;
+        border-radius: 8px;
     }
 
-    .btn-sm {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-
-    .table-responsive {
-        border-radius: 10px;
-        overflow: hidden;
-    }
-
+    /* Responsive Adjustments */
     @media (max-width: 768px) {
         .card-body {
-            padding: 1rem !important;
+            padding: 1.25rem !important;
+        }
+
+        .btn-lg {
+            padding: 0.6rem 1.2rem;
+        }
+
+        .table td,
+        .table th {
+            white-space: nowrap;
         }
     }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .table tbody tr {
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    /* Custom Scrollbar */
+    .table-responsive::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .table-responsive::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb {
+        background: #0d6efd;
+        border-radius: 3px;
+    }
+
+    .table-responsive::-webkit-scrollbar-thumb:hover {
+        background: #0b5ed7;
+    }
 </style>
+{% endblock %}
