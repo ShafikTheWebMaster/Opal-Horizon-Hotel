@@ -378,6 +378,7 @@ def bookings(request):
     return render(request, path + "bookings.html", context)
 
 
+from datetime import datetime
 import logging
 from django.contrib import messages
 
@@ -387,6 +388,17 @@ logger = logging.getLogger(__name__)
 def booking_make(request):
     role = str(request.user.groups.all()[0])
     path = role + "/"
+
+    # Get room number from query parameters for GET request
+    room_number = request.GET.get('room')
+    fd = request.GET.get('fd')
+    ld = request.GET.get('ld')
+    
+    try:
+        room = Room.objects.get(number=room_number) if room_number else None
+    except Room.DoesNotExist:
+        messages.error(request, "Selected room does not exist.")
+        return redirect("rooms")
 
     names = []
     total = 0
@@ -457,8 +469,17 @@ def booking_make(request):
             messages.success(request, "Booking successfully created.")
             return redirect("payment")
 
-    else:
-        room = None
+    context = {
+        "role": role,
+        "room": room,
+        "guests": guests,
+        "names": names,
+        "total": total,
+        "fd": fd,
+        "ld": ld
+    }
+    
+    return render(request, path + "booking-make.html", context)
 
 
 @login_required(login_url='login')
