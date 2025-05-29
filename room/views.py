@@ -57,10 +57,19 @@ def rooms(request):
             firstDayStr = request.POST.get("fd", "")
             lastDateStr = request.POST.get("ld", "")
 
-            firstDay = datetime.strptime(firstDayStr, '%Y-%m-%d')
-            lastDate = datetime.strptime(lastDateStr, '%Y-%m-%d')
+            # Convert to datetime objects
+            try:
+                firstDay = datetime.strptime(firstDayStr, '%Y-%m-%d')
+                lastDate = datetime.strptime(lastDateStr, '%Y-%m-%d')
+            except ValueError:
+                # If parsing fails, set to None or handle error
+                firstDay = None
+                lastDate = None
 
-            rooms = chech_availability(firstDay, lastDate)
+            if firstDay and lastDate:
+                rooms = chech_availability(firstDay, lastDate)
+            else:
+                rooms = []
 
         if "filter" in request.POST:
             if (request.POST.get("number") != ""):
@@ -94,11 +103,15 @@ def rooms(request):
             }
             return render(request, path + "rooms.html", context)
 
+    # Initialize firstDay and lastDate to None at the start of the function
+    firstDay = None
+    lastDate = None
+
     context = {
         "role": role,
         'rooms': rooms,
-        'fd': firstDayStr,
-        'ld': lastDateStr
+        'fd': firstDayStr if firstDayStr else '',
+        'ld': lastDateStr if lastDateStr else ''
     }
     return render(request, path + "rooms.html", context)
 
@@ -114,11 +127,11 @@ def add_room(request):
         if form.is_valid():
             room = form.save(commit=False)
             room.number = request.POST.get('number')
-        room.save()
-        messages.success(request, f'Room {room.number} has been added successfully!')
-        return redirect('rooms')
-    else:
-        messages.error(request, 'Please correct the errors below.')
+            room.save()
+            messages.success(request, f'Room {room.number} has been added successfully!')
+            return redirect('rooms')
+        else:
+            messages.error(request, 'Please correct the errors below.')
 
     context = {
         "role": role,
@@ -402,7 +415,7 @@ def booking_make(request):
 
     names = []
     total = 0
-    guests = Guest.objects.all()  # we pass this to context
+    guests = Guest.objects.all()
 
     if request.method == 'POST':
         room_id = request.POST.get("roomid")
@@ -410,8 +423,9 @@ def booking_make(request):
         ld = request.POST.get("ld")
 
         if not room_id or not fd or not ld:
+            logger.warning(f"Booking attempt with missing or empty data by user {request.user.id}. POST data: {request.POST}")
             messages.error(request, "Room and dates must be provided.")
-            logger.warning(f"Booking attempt with missing data by user {request.user.id}")
+            logger.warning(f"Booking attempt with missing data by user {request.user.id}. POST data: roomid={room_id}, fd={fd}, ld={ld}")
             return redirect("rooms")
 
         try:
@@ -422,16 +436,31 @@ def booking_make(request):
             return redirect("rooms")
 
         try:
-            start_date = datetime.strptime(fd, "%Y-%m-%d")
-            end_date = datetime.strptime(ld, "%Y-%m-%d")
-        except ValueError:
-            messages.error(request, "Invalid date format.")
-            logger.error(f"Booking attempt with invalid date format by user {request.user.id}")
-            return redirect("rooms")
+            # Handle both YYYY-MM-DD and MM/DD/YYYY formats
+            try:
+                start_date = datetime.strptime(fd, "%Y-%m-%d")
+                end_date = datetime.strptime(ld, "%Y-%m-%d")
+            except ValueError:
+                # If YYYY-MM-DD fails, try MM/DD/YYYY
+                try:
+                    start_date = datetime.strptime(fd, "%m/%d/%Y")
+                    end_date = datetime.strptime(ld, "%m/%d/%Y")
+                except ValueError:
+                    raise ValueError("Dates must be in YYYY-MM-DD format")
 
-        numberOfDays = abs((end_date - start_date).days)
-        price = room.price
-        total = price * numberOfDays
+            numberOfDays = abs((end_date - start_date).days)
+            total = room.price * numberOfDays
+
+            # Validate date range
+            if start_date.date() < date.today():
+                raise ValueError("Start date cannot be in the past")
+            if end_date.date() <= start_date.date():
+                raise ValueError("End date must be after start date")
+
+        except ValueError as e:
+            messages.error(request, str(e))
+            logger.error(f"Booking attempt with invalid date format by user {request.user.id}. Error: {str(e)}")
+            return redirect("rooms")
 
         if 'add' in request.POST:  # add dependee
             name = request.POST.get("depName")
@@ -454,9 +483,16 @@ def booking_make(request):
             else:
                 curguest = request.user.guest
 
-            curbooking = Booking(guest=curguest, roomNumber=room, startDate=fd, endDate=ld)
+            # Check room availability again before booking
+            bookings = Booking.objects.filter(roomNumber=room)
+            for booking in bookings:
+                if (booking.startDate <= end_date.date() and booking.endDate >= start_date.date()):
+                    messages.error(request, "Room is no longer available for the selected dates.")
+                    return redirect("rooms")
+
+            curbooking = Booking(guest=curguest, roomNumber=room, startDate=start_date.date(), endDate=end_date.date())
             curbooking.save()
-            logger.info(f"Booking created by user {request.user.id} for room {room.number} from {fd} to {ld}")
+            logger.info(f"Booking created by user {request.user.id} for room {room.number} from {start_date.date()} to {end_date.date()}")
 
             for i in range(room.capacity - 1):
                 nameid = "name" + str(i + 1)
@@ -468,6 +504,30 @@ def booking_make(request):
 
             messages.success(request, "Booking successfully created.")
             return redirect("payment")
+
+    # For GET requests, calculate total if we have room and dates
+    if room and fd and ld:
+        try:
+            # Handle both YYYY-MM-DD and MM/DD/YYYY formats
+            try:
+                start_date = datetime.strptime(fd, "%Y-%m-%d")
+                end_date = datetime.strptime(ld, "%Y-%m-%d")
+            except ValueError:
+                # If YYYY-MM-DD fails, try MM/DD/YYYY
+                try:
+                    start_date = datetime.strptime(fd, "%m/%d/%Y")
+                    end_date = datetime.strptime(ld, "%m/%d/%Y")
+                except ValueError:
+                    raise ValueError("Dates must be in YYYY-MM-DD format")
+
+            numberOfDays = abs((end_date - start_date).days)
+            total = room.price * numberOfDays
+            # Keep dates in their original format for the template
+            fd = start_date
+            ld = end_date
+        except ValueError as e:
+            messages.error(request, str(e))
+            return redirect("rooms")
 
     context = {
         "role": role,

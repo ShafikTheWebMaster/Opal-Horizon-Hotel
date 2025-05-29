@@ -416,6 +416,12 @@ def payment(request):
     role = str(request.user.groups.all()[0])
     path = role
 
+    if request.method == "POST":
+        if "cashPayment" in request.POST:
+            # Confirm booking without email verification
+            messages.success(request, "Booking confirmed. Please pay cash on check-in.")
+            return redirect("bookings")
+
     # create random string:
     # generating the random code to be sent to the email
     import random

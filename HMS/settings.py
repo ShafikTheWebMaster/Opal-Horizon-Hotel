@@ -132,3 +132,18 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # Media files (Uploaded files)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / "media"
+
+# Email backend for development - console backend to avoid connection errors
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Uncomment and configure the following for production SMTP server
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.example.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = 'your-email@example.com'
+# EMAIL_HOST_PASSWORD = 'your-email-password'
+# EMAIL_SUBJECT_PREFIX = '[Django] '
+# EMAIL_TIMEOUT = None
+# EMAIL_USE_LOCALTIME = False
+# EMAIL_USE_SSL = False

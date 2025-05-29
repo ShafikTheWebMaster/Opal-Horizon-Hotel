@@ -117,8 +117,11 @@
                             <form method="POST" id="paymentForm" class="needs-validation" novalidate>
         {% csrf_token %}
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-success btn-lg" id="confirmButton">
+                                    <button type="submit" class="btn btn-success btn-lg" id="confirmButton" name="onlinePayment">
                                         <i class="fas fa-lock me-2"></i>Confirm and Pay
+                                    </button>
+                                    <button type="submit" class="btn btn-warning btn-lg" id="cashButton" name="cashPayment">
+                                        <i class="fas fa-money-bill-wave me-2"></i>Pay with Cash on Check-in
                                     </button>
                                     <a href="{% url 'bookings' %}" class="btn btn-outline-secondary">
                                         <i class="fas fa-arrow-left me-2"></i>Back to Bookings
